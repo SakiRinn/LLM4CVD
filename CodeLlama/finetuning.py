@@ -3,9 +3,11 @@
 
 import os
 from pkg_resources import packaging
+import os.path as osp
+import re
+import random
 
 import fire
-import random
 import torch
 import torch.optim as optim
 from peft import get_peft_model, prepare_model_for_kbit_training
@@ -21,10 +23,13 @@ from transformers import (
     LlamaConfig,
 )
 from transformers.models.llama.modeling_llama import LlamaDecoderLayer
+from tqdm import tqdm
+from peft import PeftConfig, PeftModel
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 
 from configs import fsdp_config as FSDP_CONFIG
 from configs import train_config as TRAIN_CONFIG
-from data.concatenator import ConcatDataset
+from data.concatenator import ConcatDataset, PadDataset
 from policies import AnyPrecisionAdamW, apply_fsdp_checkpointing
 
 from utils import fsdp_auto_wrap_policy
@@ -50,6 +55,15 @@ import warnings
 
 warnings.filterwarnings(action='ignore', message='MatMul8bitLt: inputs will be cast from torch.float32 to float16 during quantization')
 
+def get_max_length(dataset):
+    max_length = 0
+    for sample in tqdm(dataset, desc="Get max length", dynamic_ncols=True):
+            length = len(sample['input_ids'])
+            if length > max_length:
+                max_length = length
+    return max_length
+
+
 def main(**kwargs):
     # Update the configuration for the training and sharding process
     train_config, fsdp_config = TRAIN_CONFIG(), FSDP_CONFIG()
@@ -72,6 +86,17 @@ def main(**kwargs):
         clear_gpu_cache(local_rank)
         setup_environ_flags(rank)
 
+    # output_dir = kwargs.get('output_dir', None)
+    # if output_dir is not None and osp.exists(output_dir):
+    #     for filename in os.listdir(output_dir):
+    #         epoch_matched = re.match(r'^epoch-(\d+)$', filename)
+    #         if epoch_matched is None:
+    #             continue
+    #         num_epoch = int(epoch_matched.group(1))
+    #         if num_epoch + 1 > train_config.start_epoch:
+    #             train_config.start_epoch = num_epoch + 1
+    #             train_config.peft_model = osp.join(output_dir, filename)
+
     # Load the pre-trained model and setup its configuration
     use_cache = False if train_config.enable_fsdp else None
     if train_config.enable_fsdp and train_config.low_cpu_fsdp:
@@ -87,20 +112,20 @@ def main(**kwargs):
             raise Exception("latest pytorch nightly build is required to run with low_cpu_fsdp config, "
                             "please install latest nightly.")
         if rank == 0:
-            model = LlamaForCausalLM.from_pretrained(
+            model = AutoModelForCausalLM.from_pretrained(
                 train_config.model_name,
                 load_in_8bit=True if train_config.quantization else None,
                 device_map="auto" if train_config.quantization else None,
                 use_cache=use_cache,
             )
         else:
-            llama_config = LlamaConfig.from_pretrained(train_config.model_name)
+            llama_config = AutoConfig.from_pretrained(train_config.model_name)
             llama_config.use_cache = use_cache
             with torch.device("meta"):
-                model = LlamaForCausalLM(llama_config)
+                model = AutoModelForCausalLM(llama_config)
 
     else:
-        model = LlamaForCausalLM.from_pretrained(
+        model = AutoModelForCausalLM.from_pretrained(
             train_config.model_name,
             load_in_8bit=True if train_config.quantization else None,
             device_map="auto" if train_config.quantization else None,
@@ -119,7 +144,7 @@ def main(**kwargs):
             print("Module 'optimum' not found. Please install 'optimum' it before proceeding.")
 
     # Load the tokenizer and add special tokens
-    tokenizer = CodeLlamaTokenizer.from_pretrained(train_config.model_name)
+    tokenizer = AutoTokenizer.from_pretrained(train_config.model_name)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
     print_model_size(model, train_config, rank if train_config.enable_fsdp else 0)
@@ -135,6 +160,10 @@ def main(**kwargs):
     if train_config.use_peft:
         peft_config = generate_peft_config(train_config, kwargs)
         model = get_peft_model(model, peft_config)
+        # if train_config.peft_model:
+        #     peft_config = PeftConfig.from_pretrained(train_config.peft_model)
+        #     peft_config.inference_mode = False
+        #     model = PeftModel.from_pretrained(model, train_config.peft_model)
         model.print_trainable_parameters()
 
     #setting up FSDP if enable_fsdp is enabled
@@ -183,8 +212,13 @@ def main(**kwargs):
     if not train_config.enable_fsdp or rank == 0:
             print(f"--> Validation Set Length = {len(dataset_val)}")
 
+    train_config.context_length = max(train_config.context_length,
+                                      get_max_length(dataset_train), get_max_length(dataset_val))
+
     if train_config.batching_strategy == "packing":
         dataset_train = ConcatDataset(dataset_train, chunk_size=train_config.context_length)
+    elif train_config.batching_strategy == "padding":
+        dataset_train = PadDataset(dataset_train, train_config.context_length, tokenizer.pad_token_id)
 
     train_dl_kwargs = get_dataloader_kwargs(train_config, dataset_train, tokenizer, "train")
 

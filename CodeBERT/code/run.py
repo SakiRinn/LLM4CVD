@@ -75,7 +75,7 @@ class InputFeatures(object):
         self.idx=str(idx)
         self.label=label
 
-        
+
 def convert_examples_to_features(js,tokenizer,args):
     #source
     code=' '.join(js['input'].split())
@@ -104,9 +104,9 @@ class TextDataset(Dataset):
     def __len__(self):
         return len(self.examples)
 
-    def __getitem__(self, i):       
+    def __getitem__(self, i):
         return torch.tensor(self.examples[i].input_ids),torch.tensor(self.examples[i].label)
-            
+
 
 def set_seed(seed=42):
     random.seed(seed)
@@ -118,11 +118,11 @@ def set_seed(seed=42):
 
 
 def train(args, train_dataset, model, tokenizer):
-    """ Train the model """ 
+    """ Train the model """
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
     train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
-    
-    train_dataloader = DataLoader(train_dataset, sampler=train_sampler, 
+
+    train_dataloader = DataLoader(train_dataset, sampler=train_sampler,
                                   batch_size=args.train_batch_size,num_workers=4,pin_memory=True)
     args.max_steps=args.epoch*len( train_dataloader)
     args.save_steps=len( train_dataloader)
@@ -174,7 +174,7 @@ def train(args, train_dataset, model, tokenizer):
                     torch.distributed.get_world_size() if args.local_rank != -1 else 1))
     logger.info("  Gradient Accumulation steps = %d", args.gradient_accumulation_steps)
     logger.info("  Total optimization steps = %d", args.max_steps)
-    
+
     global_step = args.start_step
     tr_loss, logging_loss,avg_loss,tr_nb,tr_num,train_loss = 0.0, 0.0,0.0,0,0,0
     best_mrr=0.0
@@ -182,14 +182,14 @@ def train(args, train_dataset, model, tokenizer):
     best_f1=0.0
     # model.resize_token_embeddings(len(tokenizer))
     model.zero_grad()
- 
-    for idx in range(args.start_epoch, int(args.num_train_epochs)): 
+
+    for idx in range(args.start_epoch, int(args.num_train_epochs)):
         bar = tqdm(train_dataloader,total=len(train_dataloader))
         tr_num=0
         train_loss=0
         for step, batch in enumerate(bar):
-            inputs = batch[0].to(args.device)        
-            labels=batch[1].to(args.device) 
+            inputs = batch[0].to(args.device)
+            labels=batch[1].to(args.device)
             model.train()
             loss,logits = model(inputs,labels)
 
@@ -215,11 +215,11 @@ def train(args, train_dataset, model, tokenizer):
             avg_loss=round(train_loss/tr_num,5)
             bar.set_description("epoch {} loss {}".format(idx,avg_loss))
 
-                
+
             if (step + 1) % args.gradient_accumulation_steps == 0:
                 optimizer.step()
                 optimizer.zero_grad()
-                scheduler.step()  
+                scheduler.step()
                 global_step += 1
                 output_flag=True
                 avg_loss=round(np.exp((tr_loss - logging_loss) /(global_step- tr_nb)),4)
@@ -228,16 +228,16 @@ def train(args, train_dataset, model, tokenizer):
                     tr_nb=global_step
 
                 # if args.local_rank in [-1, 0] and args.save_steps > 0 and global_step % args.save_steps == 0:
-                    
+
         if args.local_rank == -1 and args.evaluate_during_training:  # Only evaluate when single GPU otherwise metrics may not average well
             results = evaluate(args, model, tokenizer,eval_when_training=True)
             for key, value in results.items():
-                logger.info("  %s = %s", key, round(value,4))                    
+                logger.info("  %s = %s", key, round(value,4))
             # Save model checkpoint
-            
-            if results['eval_f1']> best_f1:
+
+            if results['eval_f1']>= best_f1:
                 best_f1=results['eval_f1']
-                logger.info("  "+"*"*20)  
+                logger.info("  "+"*"*20)
                 logger.info("  Best f1:%s",round(best_f1,4))
                 logger.info("  "+"*"*20)
 
@@ -276,11 +276,11 @@ def evaluate(args, model, tokenizer,eval_when_training=False):
     eval_loss = 0.0
     nb_eval_steps = 0
     model.eval()
-    logits=[] 
+    logits=[]
     labels=[]
     for batch in eval_dataloader:
-        inputs = batch[0].to(args.device)        
-        label=batch[1].to(args.device) 
+        inputs = batch[0].to(args.device)
+        label=batch[1].to(args.device)
         with torch.no_grad():
             lm_loss,logit = model(inputs,label)
             eval_loss += lm_loss.mean().item()
@@ -294,9 +294,9 @@ def evaluate(args, model, tokenizer,eval_when_training=False):
     eval_acc=np.mean(labels==preds)
     eval_loss = eval_loss / nb_eval_steps
     perplexity = torch.tensor(eval_loss)
-    eval_f1 = f1_score(labels, preds)             
+    eval_f1 = f1_score(labels, preds)
 
-            
+
     result = {
         "eval_loss": float(perplexity),
         "eval_acc":round(eval_acc,4),
@@ -326,12 +326,12 @@ def test(args, model, tokenizer, split="test"):
     eval_loss = 0.0
     nb_eval_steps = 0
     model.eval()
-    logits=[]   
+    logits=[]
     labels=[]
     representations = []
     for batch in tqdm(eval_dataloader,total=len(eval_dataloader)):
-        inputs = batch[0].to(args.device)        
-        label=batch[1].to(args.device) 
+        inputs = batch[0].to(args.device)
+        label=batch[1].to(args.device)
         with torch.no_grad():
             logit = model(inputs)
             logits.append(logit.cpu().numpy())
@@ -343,7 +343,7 @@ def test(args, model, tokenizer, split="test"):
     y_trues, y_preds = labels, preds
     acc = accuracy_score(y_trues, y_preds)
     recall = recall_score(y_trues, y_preds)
-    precision = precision_score(y_trues, y_preds)   
+    precision = precision_score(y_trues, y_preds)
     f1 = f1_score(y_trues, y_preds)
 
     for label, pred in zip(y_trues, y_preds):
@@ -413,7 +413,7 @@ def main(args):
         model = model_class.from_pretrained(args.model_name_or_path,
                                             from_tf=bool('.ckpt' in args.model_name_or_path),
                                             config=config,
-                                            cache_dir=args.cache_dir if args.cache_dir else None)    
+                                            cache_dir=args.cache_dir if args.cache_dir else None)
     else:
         model = model_class(config)
 
@@ -440,16 +440,16 @@ def main(args):
     # Evaluation
     if args.do_eval and args.local_rank in [-1, 0]:
             output_path = os.path.join(args.output_dir, 'checkpoint-best-f1/model.bin')
-            model.load_state_dict(torch.load(output_path))    
+            model.load_state_dict(torch.load(output_path))
             model.to(args.device)
             result=evaluate(args, model, tokenizer)
             logger.info("***** Eval results *****")
             for key in sorted(result.keys()):
                 logger.info("  %s = %s", key, str(round(result[key],4)))
-            
+
     if args.do_test and args.local_rank in [-1, 0]:
             output_path = os.path.join(args.output_dir, 'checkpoint-best-f1/model.bin')
-            model.load_state_dict(torch.load(output_path))                  
+            model.load_state_dict(torch.load(output_path))
             model.to(args.device)
             test(args, model, tokenizer)
 
@@ -465,7 +465,7 @@ if __name__ == "__main__":
                         help="An optional input evaluation data file to evaluate the perplexity on (a text file).")
     parser.add_argument("--test_data_file", default=None, type=str,
                         help="An optional input evaluation data file to evaluate the perplexity on (a text file).")
-                    
+
     parser.add_argument("--model_type", default="roberta", type=str,
                         help="The model architecture to be fine-tuned.")
     parser.add_argument("--model_name_or_path", default="microsoft/codebert-base", type=str,
@@ -491,7 +491,7 @@ if __name__ == "__main__":
     parser.add_argument("--do_eval", action='store_true',
                         help="Whether to run eval on the dev set.")
     parser.add_argument("--do_test", action='store_true',
-                        help="Whether to run eval on the dev set.")    
+                        help="Whether to run eval on the dev set.")
     parser.add_argument("--do_attribution", action='store_true',
                         help="Whether to run attribution")
     parser.add_argument("--evaluate_during_training", action='store_true',

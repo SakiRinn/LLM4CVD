@@ -8,7 +8,7 @@ from enum import Enum
 
 from tree_sitter import Tree
 
-import os
+import os.path as osp
 from pathlib import Path
 from typing import Optional
 
@@ -20,9 +20,9 @@ class Lang(Enum):
     PYTHON = ".py"
     C = ".c"
 
-path = 'my-languages.so'
-c_path = 'tree-sitter-c'
-java_path = 'tree-sitter-java'
+path = osp.join(osp.split(__file__)[0], 'my_languages.so')
+c_path = osp.join(osp.split(__file__)[0], 'tree-sitter-c')
+java_path = osp.join(osp.split(__file__)[0], 'tree-sitter-java')
 Language.build_library(
   path,
   [c_path, java_path]

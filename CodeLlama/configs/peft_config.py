@@ -6,8 +6,8 @@ from typing import List
 
 @dataclass
 class lora_config:
-     r: int=4
-     lora_alpha: int=8
+     r: int=16
+     lora_alpha: int=32
      target_modules: List[str] = field(default_factory=lambda: ["q_proj", "v_proj", "k_proj", "o_proj"])
      # target_modules: List[str] = field(default_factory=lambda: ["q_proj", "v_proj"])
      bias= "none"
@@ -24,4 +24,4 @@ class llama_adapter_config:
 @dataclass
 class prefix_config:
      num_virtual_tokens: int=30
-     task_type: str= "CAUSAL_LM"    
+     task_type: str= "CAUSAL_LM"

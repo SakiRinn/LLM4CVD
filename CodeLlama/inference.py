@@ -89,7 +89,7 @@ def main():
                 input_ids=model_input['input_ids'],
                 return_dict_in_generate=True,
                 output_scores=True,
-                max_new_tokens=100,
+                max_new_tokens=8,
             )
             logits = generation_output.scores
             probabilities = [torch.softmax(logit, dim=-1) for logit in logits]

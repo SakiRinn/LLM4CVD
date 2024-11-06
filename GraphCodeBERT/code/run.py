@@ -21,10 +21,14 @@ using a masked language modeling (MLM) loss.
 
 from __future__ import absolute_import, division, print_function
 
+import os.path as osp
+import sys
+model_dir = osp.abspath(osp.join(osp.split(__file__)[0], '..'))
+sys.path.append(model_dir)
+
 import argparse
 import logging
 import os
-import sys
 import pickle
 import random
 import json
@@ -69,7 +73,7 @@ dfg_function = {
 
 # load parsers
 parsers = {}
-lang_path = "parser/my-languages.so"
+lang_path = osp.join(osp.split(__file__)[0], 'parser', 'my-languages.so')
 for lang in dfg_function:
     LANGUAGE = Language(lang_path, lang)
     parser = Parser()
@@ -331,7 +335,7 @@ def train(args, train_dataset, model, tokenizer):
         results = evaluate(args, model, tokenizer, eval_when_training=True)
 
         # Save model checkpoint
-        if results[f'eval_{args.validation_metric}'] > best_perf:
+        if results[f'eval_{args.validation_metric}'] >= best_perf:
             best_perf = results[f'eval_{args.validation_metric}']
             logger.info("  " + "*" * 20)
             logger.info("  Best %s:%s", args.validation_metric, round(best_perf, 4))
@@ -595,4 +599,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

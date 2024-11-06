@@ -188,7 +188,7 @@ def train(args, train_dataset, model, tokenizer):
         for key, value in results.items():
             logger.info("  %s = %s", key, round(value, 4))
 
-        if results[f'eval_{args.validation_metric}'] > best_perf:
+        if results[f'eval_{args.validation_metric}'] >= best_perf:
             best_perf = results[f'eval_{args.validation_metric}']
             logger.info("  " + "*" * 20)
             logger.info(f"  Best {args.validation_metric}:%s", round(best_perf, 4))
@@ -290,7 +290,7 @@ def test(args, model, tokenizer, data_file):
 
     with open(data_file, 'r') as json_file:
         data = json.load(json_file)
-        cwe_list = [item['CWE'] for item in data]  # 假设每个项目都有一个 'CWE' 键
+        cwe_list = [item.get('cwe', 'null') for item in data]  # 假设每个项目都有一个 'CWE' 键
 
     # 确保 CWE 列表的长度与其他数据相匹配
     if len(cwe_list) != len(labels):
