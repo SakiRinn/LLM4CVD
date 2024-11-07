@@ -30,7 +30,7 @@ class DevignModel(nn.Module):
 
     def forward(self, batch, cuda=False):
         graph, features, edge_types = batch.get_network_inputs(cuda=cuda)
-        outputs = self.ggnn(graph, features, edge_types)
+        outputs = self.ggnn(graph.to('cuda'), features, edge_types)
         x_i, _ = batch.de_batchify_graphs(features)
         h_i, _ = batch.de_batchify_graphs(outputs)
         c_i = torch.cat((h_i, x_i), dim=-1)
@@ -75,7 +75,7 @@ class GGNNSum(nn.Module):
 
     def forward(self, batch, cuda=False):
         graph, features, edge_types = batch.get_network_inputs(cuda=cuda)
-        outputs = self.ggnn(graph, features, edge_types)
+        outputs = self.ggnn(graph.to('cuda'), features, edge_types)
         h_i, _ = batch.de_batchify_graphs(outputs)
         ggnn_sum = self.classifier(h_i.sum(dim=1))
         result = self.sigmoid(ggnn_sum).squeeze(dim=-1)

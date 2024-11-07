@@ -5,5 +5,7 @@
 data
 outputs
 **/graph/intermediate
+raw_code/
 tmp/
-Devign/joern/
+@scripts/joern/*
+!@scripts/joern/.gitkeep

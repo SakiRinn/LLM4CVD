@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_type', type=str, help='Type of the model (devign/ggnn)',
                         choices=['devign', 'ggnn'], default='devign')
-    parser.add_argument('--dataset', type=str, required=True, help='Name of the dataset for experiment.')
+    parser.add_argument('--output_dir', type=str, required=True)
     parser.add_argument('--input_dir', type=str, required=True, help='Input Directory of the parser')
     parser.add_argument('--node_tag', type=str, help='Name of the node feature.', default='node_features')
     parser.add_argument('--graph_tag', type=str, help='Name of the graph feature.', default='graph')
@@ -37,7 +37,7 @@ if __name__ == '__main__':
               'Setting graph embedding size to feature size', file=sys.stderr)
         args.graph_embed_size = args.feature_size
 
-    model_dir = os.path.join('models', args.dataset)
+    model_dir = args.output_dir
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
     input_dir = args.input_dir
@@ -72,4 +72,4 @@ if __name__ == '__main__':
     optim = Adam(model.parameters(), lr=0.0001, weight_decay=0.001)
     train(model=model, dataset=dataset, max_steps=1000000, dev_every=128,
           loss_function=loss_function, optimizer=optim,
-          save_path=model_dir + '/GGNNSumModel', max_patience=100, log_every=None)
+          save_path=model_dir, max_patience=100, log_every=None)

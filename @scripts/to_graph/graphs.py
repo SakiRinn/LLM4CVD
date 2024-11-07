@@ -302,9 +302,12 @@ def json_to_graphs(w2v_model, json_path, output_dir, code_key='code', label_key=
     csv_dir = osp.join(output_dir, 'intermediate')
     try:
         analyze_code('raw_code/', csv_dir)
-    finally:
+        graphs = generate_graphs(w2v_model, csv_dir, raw_data, label_key)
+    except BaseException:
         shutil.rmtree('raw_code/')
-    graphs = generate_graphs(w2v_model, csv_dir, raw_data, label_key)
+        shutil.rmtree(csv_dir)
+    shutil.rmtree('raw_code/')
+    shutil.rmtree(csv_dir)
     return graphs
 
 

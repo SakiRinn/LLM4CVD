@@ -53,7 +53,7 @@ def main():
 
     if not args.w2v:
         print("Train a new w2v model...")
-        w2v_dir = osp.join(args.output_dir, 'w2v', osp.basename(args.data_path).split(".")[0])
+        w2v_dir = osp.join(args.output_dir, osp.basename(args.data_path).split(".")[0], 'w2v')
         with open(args.data_path, 'r') as f:
             data = json.load(f)
             sentences = [e['code'] for e in data]
@@ -67,9 +67,8 @@ def main():
     graphs = json_to_graphs(w2v_model, args.data_path, args.output_dir)
     graph_datasets = train_test_split(graphs)
 
-    data_name = os.path.split(args.data_path)[-1].split('.')[0]
     for k, v in graph_datasets.items():
-        with open(os.path.join(args.output_dir, f'{k}.json'), 'w') as f:
+        with open(os.path.join(args.output_dir, osp.basename(args.data_path).split(".")[0], f'{k}.json'), 'w') as f:
             json.dump(v, f)
     print('Completed!')
 
