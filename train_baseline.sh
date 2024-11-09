@@ -61,7 +61,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python Devign/main.py \
     --output_dir "outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
     --input_dir "data/${DATASET_NAME}/graph/${DATASET_NAME}_${LENGTH}/" \
     --feature_size 197 \
-    1>&2 2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    2>&1 >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 else
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \

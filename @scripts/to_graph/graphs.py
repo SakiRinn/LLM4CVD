@@ -88,7 +88,10 @@ NODE_TYPES = [
     'ExpressionStatement',
     'ForStatement',
     'InitializerList',
-    'ElseStatement'
+    'ElseStatement',
+    # Newly added
+    'ThrowStatement',
+    'CFGExceptionNode'
 ]
 NODE_TYPES_TO_IDS = {
     'AndExpression': 1,
@@ -159,7 +162,10 @@ NODE_TYPES_TO_IDS = {
     'ExpressionStatement': 66,
     'ForStatement': 67,
     'InitializerList': 68,
-    'ElseStatement': 69
+    'ElseStatement': 69,
+    # Newly added
+    'ThrowStatement': 70,
+    'CFGExceptionNode': 71
 }
 EDGE_TYPES = [
     'IS_AST_PARENT',
@@ -303,11 +309,9 @@ def json_to_graphs(w2v_model, json_path, output_dir, code_key='code', label_key=
     try:
         analyze_code('raw_code/', csv_dir)
         graphs = generate_graphs(w2v_model, csv_dir, raw_data, label_key)
-    except BaseException:
+    finally:
         shutil.rmtree('raw_code/')
         shutil.rmtree(csv_dir)
-    shutil.rmtree('raw_code/')
-    shutil.rmtree(csv_dir)
     return graphs
 
 

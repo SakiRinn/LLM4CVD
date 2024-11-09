@@ -1,0 +1,14 @@
+torch==2.1.0
+torchtext==0.16.0
+transformers==4.32.1
+tokenizers==0.13.3
+datasets==2.20.0
+bitsandbytes==0.43.1
+accelerate==1.0.1
+scipy==1.12.0
+tqdm==4.66.4
+fire==0.6.0
+tree_sitter==0.21.3
+ptvsd==4.3.2
+openai==1.44.0
+# pip install  dgl -f https://data.dgl.ai/wheels/torch-2.1/cu121/repo.html

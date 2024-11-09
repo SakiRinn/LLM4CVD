@@ -32,11 +32,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, help='Batch Size for training', default=128)
     args = parser.parse_args()
 
-    if args.feature_size > args.graph_embed_size:
-        print('Warning!!! Graph Embed dimension should be at least equal to the feature dimension.\n'
-              'Setting graph embedding size to feature size', file=sys.stderr)
-        args.graph_embed_size = args.feature_size
-
     model_dir = args.output_dir
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
@@ -55,9 +50,16 @@ if __name__ == '__main__':
         file = open(processed_data_path, 'wb')
         pickle.dump(dataset, file)
         file.close()
-    assert args.feature_size == dataset.feature_size, \
-        'Dataset contains different feature vector than argument feature size. ' \
-        'Either change the feature vector size in argument, or provide different dataset.'
+
+    if args.feature_size != dataset.feature_size:
+        print('Warning!!! Dataset contains different feature vector than argument feature size.\n'
+              f'Setting argument feature size to dataset feature size {dataset.feature_size}.', file=sys.stderr)
+        args.feature_size = dataset.feature_size
+        if args.feature_size > args.graph_embed_size:
+            print('Warning!!! Graph Embed dimension should be at least equal to the feature dimension.\n'
+                  f'Setting graph embedding size to argument feature size {args.feature_size}.', file=sys.stderr)
+            args.graph_embed_size = args.feature_size
+
     if args.model_type == 'ggnn':
         model = GGNNSum(input_dim=dataset.feature_size, output_dim=args.graph_embed_size,
                         num_steps=args.num_steps, max_edge_types=dataset.max_edge_type)

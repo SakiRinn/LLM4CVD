@@ -52,7 +52,7 @@ class GGNNBatchGraph(BatchGraph):
         edge_types = self.graph.edata['etype']
         if cuda:
             self.cuda(device=device)
-            return self.graph, features.cuda(device=device), edge_types.cuda(device=device)
+            return self.graph.to('cuda'), features.cuda(device=device), edge_types.cuda(device=device)
         else:
             return self.graph, features, edge_types
         pass

@@ -1,7 +1,6 @@
 .vscode
 **/__pycache__
 *.log
-*.txt
 data
 outputs
 **/graph/intermediate
