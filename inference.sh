@@ -30,4 +30,4 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/inference.py \
     --tuned_model "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/epoch-4" \
     --data_file "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_test.json" \
     --csv_path "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/results.csv" \
-    2>&1 1>"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
+    2>"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log" 1>&2

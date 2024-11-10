@@ -1,25 +1,25 @@
 import copy
 import json
-import sys
 
+import dgl
 import torch
 from dgl import DGLGraph
 from tqdm import tqdm
 
-from data_loader.batch_graph import GGNNBatchGraph
 from utils import load_default_identifiers, initialize_batch, debug
 
 
 class DataEntry:
     def __init__(self, datset, num_nodes, features, edges, target):
-        self.dataset = datset
         self.num_nodes = num_nodes
         self.target = target
-        self.graph = DGLGraph()
         self.features = torch.FloatTensor(features)
+
+        self.graph = DGLGraph()
         self.graph.add_nodes(self.num_nodes, data={'features': self.features})
+
         for s, _type, t in edges:
-            etype_number = self.dataset.get_edge_type_number(_type)
+            etype_number = datset.get_edge_type_number(_type)
             self.graph.add_edges(s, t, data={'etype': torch.LongTensor([etype_number])})
 
 
@@ -108,25 +108,23 @@ class DataSet:
     def get_dataset_by_ids_for_GGNN(self, entries, ids):
         taken_entries = [entries[i] for i in ids]
         labels = [e.target for e in taken_entries]
-        batch_graph = GGNNBatchGraph()
-        for entry in taken_entries:
-            batch_graph.add_subgraph(copy.deepcopy(entry.graph))
+        batch_graph = dgl.batch([entry.graph for entry in taken_entries])
         return batch_graph, torch.FloatTensor(labels)
 
     def get_next_train_batch(self):
         if len(self.train_batches) == 0:
             self.initialize_train_batch()
-        ids = self.train_batches.pop()
+        ids = self.train_batches.pop(0)
         return self.get_dataset_by_ids_for_GGNN(self.train_examples, ids)
 
     def get_next_valid_batch(self):
         if len(self.valid_batches) == 0:
             self.initialize_valid_batch()
-        ids = self.valid_batches.pop()
+        ids = self.valid_batches.pop(0)
         return self.get_dataset_by_ids_for_GGNN(self.valid_examples, ids)
 
     def get_next_test_batch(self):
         if len(self.test_batches) == 0:
             self.initialize_test_batch()
-        ids = self.test_batches.pop()
+        ids = self.test_batches.pop(0)
         return self.get_dataset_by_ids_for_GGNN(self.test_examples, ids)

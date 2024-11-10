@@ -36,7 +36,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --eval_batch_size 64 \
     --evaluate_during_training \
     --seed 42 \
-    1>&2 2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 elif [[ "$MODEL_NAME" == "UniXcoder" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
@@ -52,16 +52,13 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --train_batch_size 32 \
     --eval_batch_size 64 \
     --seed 42 \
-    1>&2 2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 elif [[ "$MODEL_NAME" == "Devign" ]]; then
-python @scripts/to_graph/main.py \
-    "data/${DATASET_NAME}/length/${DATASET_NAME}_${LENGTH}.json" \
-    --output-dir "data/${DATASET_NAME}/graph/"
 CUDA_VISIBLE_DEVICES="${CUDA}" python Devign/main.py \
     --output_dir "outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
     --input_dir "data/${DATASET_NAME}/graph/${DATASET_NAME}_${LENGTH}/" \
     --feature_size 197 \
-    2>&1 >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 else
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
@@ -80,5 +77,5 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --eval_batch_size 64 \
     --evaluate_during_training \
     --seed 42 \
-    1>&2 2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 fi

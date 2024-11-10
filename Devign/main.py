@@ -72,6 +72,6 @@ if __name__ == '__main__':
     model.cuda()
     loss_function = BCELoss(reduction='sum')
     optim = Adam(model.parameters(), lr=0.0001, weight_decay=0.001)
-    train(model=model, dataset=dataset, max_steps=1000000, dev_every=128,
+    train(model=model, dataset=dataset, max_steps=1000000, dev_every=64, log_every=None,
           loss_function=loss_function, optimizer=optim,
-          save_path=model_dir, max_patience=100, log_every=None)
+          save_path=model_dir, max_patience=100)

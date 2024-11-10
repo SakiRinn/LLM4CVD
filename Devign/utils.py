@@ -17,7 +17,7 @@ def load_default_identifiers(n, g, l):
 
 def initialize_batch(entries, batch_size, shuffle=False):
     total = len(entries)
-    indices = np.arange(0, total - 1, 1)
+    indices = np.arange(0, total, 1)
     if shuffle:
         np.random.shuffle(indices)
     batch_indices = []
@@ -30,7 +30,7 @@ def initialize_batch(entries, batch_size, shuffle=False):
             c_end = end
         batch_indices.append(indices[curr:c_end])
         curr = c_end
-    return batch_indices[::-1]
+    return batch_indices
 
 
 def tally_param(model):
@@ -49,4 +49,4 @@ def debug(*msg, sep='\t'):
     print('[' + str(time) + '] File \"' + file_name + '\", line ' + str(ln) + '  ', end='\t')
     for m in msg:
         print(m, end=sep)
-    print('')
+    print('', flush=True)

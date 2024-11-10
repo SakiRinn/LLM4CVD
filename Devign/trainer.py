@@ -1,10 +1,9 @@
 import copy
-from sys import stderr
+import os.path as osp
 
 import numpy as np
 import torch
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
-from tqdm import tqdm
 
 from utils import debug
 
@@ -30,7 +29,7 @@ def evaluate_loss(model, loss_function, num_batches, data_iter, cuda=False):
                 )
             all_targets.extend(targets.detach().cpu().numpy().tolist())
         model.train()
-        return np.mean(_loss).item(), accuracy_score(all_targets, all_predictions) * 100
+        return np.mean(_loss).item(), f1_score(all_targets, all_predictions) * 100
     pass
 
 
@@ -73,6 +72,7 @@ def train(model, dataset, max_steps, dev_every, loss_function, optimizer, save_p
             model.train()
             model.zero_grad()
             graph, targets = dataset.get_next_train_batch()
+            #graph = graph.to("cuda:0")
             targets = targets.cuda()
             predictions = model(graph, cuda=True)
             batch_loss = loss_function(predictions, targets)
@@ -82,13 +82,13 @@ def train(model, dataset, max_steps, dev_every, loss_function, optimizer, save_p
             batch_loss.backward()
             optimizer.step()
             if step_count % dev_every == (dev_every - 1):
-                valid_loss, valid_f1 = evaluate_loss(model, loss_function, dataset.initialize_train_batch(),
-                                                     dataset.get_next_train_batch)
+                valid_loss, valid_f1 = evaluate_loss(model, loss_function, dataset.initialize_valid_batch(),
+                                                     dataset.get_next_valid_batch)
                 if valid_f1 > best_f1:
                     patience_counter = 0
                     best_f1 = valid_f1
                     best_model = copy.deepcopy(model.state_dict())
-                    _save_file = open(save_path + '-model.bin', 'wb')
+                    _save_file = open(osp.join(save_path, 'model.bin'), 'wb')
                     torch.save(model.state_dict(), _save_file)
                     _save_file.close()
                 else:
@@ -101,13 +101,14 @@ def train(model, dataset, max_steps, dev_every, loss_function, optimizer, save_p
                     break
     except KeyboardInterrupt:
         debug('Training Interrupted by user!')
+        raise
 
     if best_model is not None:
         model.load_state_dict(best_model)
-    _save_file = open(save_path + '-model.bin', 'wb')
+    _save_file = open(osp.join(save_path, 'model.bin'), 'wb')
     torch.save(model.state_dict(), _save_file)
     _save_file.close()
-    acc, pr, rc, f1 = evaluate_metrics(model, loss_function, dataset.initialize_train_batch(),
-                                       dataset.get_next_train_batch)
+    acc, pr, rc, f1 = evaluate_metrics(model, loss_function, dataset.initialize_test_batch(),
+                                       dataset.get_next_test_batch)
     debug('%s\tTest Accuracy: %0.2f\tPrecision: %0.2f\tRecall: %0.2f\tF1: %0.2f' % (save_path, acc, pr, rc, f1))
     debug('=' * 100)

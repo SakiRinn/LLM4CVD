@@ -22,14 +22,14 @@ MODEL_MAP["llama2"]="meta-llama/Llama-2-7b-hf"
 MODEL_MAP["codellama"]="codellama/CodeLlama-7b-hf"
 
 declare -A BATCH_MAP
-BATCH_MAP["llama2_0-512"]=32
-BATCH_MAP["llama2_512-1024"]=16
-BATCH_MAP["codellama_0-512"]=32
-BATCH_MAP["codellama_512-1024"]=16
-BATCH_MAP["llama3_0-512"]=32
-BATCH_MAP["llama3_512-1024"]=16
-BATCH_MAP["llama3.1_0-512"]=32
-BATCH_MAP["llama3.1_512-1024"]=16
+BATCH_MAP["llama2_0-512"]=20
+BATCH_MAP["llama2_512-1024"]=10
+BATCH_MAP["codellama_0-512"]=20
+BATCH_MAP["codellama_512-1024"]=10
+BATCH_MAP["llama3_0-512"]=16
+BATCH_MAP["llama3_512-1024"]=8
+BATCH_MAP["llama3.1_0-512"]=16
+BATCH_MAP["llama3.1_512-1024"]=8
 
 mkdir -p "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/"
 
@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/finetune.py \
     --train_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
     --valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/" \
-    2>&1 1>"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
 else
 CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/finetuning.py \
     --quantization \
@@ -63,7 +63,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/finetuning.py \
     --alpaca_dataset.train_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
     --alpaca_dataset.valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/" \
-    2>&1 1>"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
 fi
 
 # CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/inference.py \

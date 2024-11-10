@@ -1,0 +1,102 @@
+./finetune.sh    devign  llama3.1    0-512       0;
+./finetune.sh    devign  llama3.1    512-1024    0;
+./finetune.sh    devign  llama3      0-512       0;
+./finetune.sh    devign  llama3      512-1024    0;
+./finetune.sh    devign  codellama   0-512       0;
+./finetune.sh    devign  codellama   512-1024    0;
+./finetune.sh    devign  llama2      0-512       0;
+./finetune.sh    devign  llama2      512-1024    0;
+
+./inference.sh    bigvul        llama3.1   0-512       0;
+./inference.sh    bigvul        llama3.1   512-1024    0;
+./inference.sh    diversevul    llama3.1   0-512       0;
+./inference.sh    diversevul    llama3.1   512-1024    0;
+./inference.sh    draper        llama3.1   0-512       0;
+./inference.sh    draper        llama3.1   512-1024    0;
+./inference.sh    d2a           llama3.1   0-512       0;
+./inference.sh    d2a           llama3.1   512-1024    0
+
+./train_baseline.sh   devign  CodeBERT        0-512   0;
+./train_baseline.sh   devign  ReGVD           0-512   0;
+./train_baseline.sh   devign  GraphCodeBERT   0-512   0;
+./train_baseline.sh   devign  UniXcoder       0-512   0;
+
+./train_baseline.sh   devign  Devign        0-512   0;
+./train_baseline.sh   devign  Devign        512-1024   0;
+./train_baseline.sh   reveal  Devign        0-512   0;
+./train_baseline.sh   reveal  Devign        512-1024   0;
+./train_baseline.sh   bigvul  Devign        0-512   0;
+./train_baseline.sh   bigvul  Devign        512-1024   0;
+./train_baseline.sh   diversevul  Devign    0-512   0;
+./train_baseline.sh   diversevul  Devign    512-1024   0;
+./train_baseline.sh   draper  Devign        0-512   0;
+./train_baseline.sh   draper  Devign        512-1024   0;
+
+./to_graph.sh   devign  0-512;
+./to_graph.sh   devign  512-1024;
+./to_graph.sh   reveal  0-512;
+./to_graph.sh   reveal  512-1024;
+./to_graph.sh   bigvul  0-512;
+./to_graph.sh   bigvul  512-1024;
+./to_graph.sh   diversevul  0-512;
+./to_graph.sh   diversevul  512-1024;
+./to_graph.sh   draper  0-512;
+./to_graph.sh   draper  512-1024;
+
+python @scripts/to_graph/main.py data/reveal/length/reveal_0-512.json --output-dir data/reveal/graph
+python Devign/main.py --input_dir data/devign/graph/devign_0-512 --output_dir ./devign/ >log.log
+
+python run.py
+    --do_train
+    --do_eval
+    --model_type roberta
+    --model_name_or_path $pretrained_model
+    --train_filename $train_file
+    --dev_filename $dev_file
+    --output_dir $output_dir
+    --max_source_length $source_length
+    --max_target_length $target_length
+    --beam_size $beam_size
+    --train_batch_size $batch_size
+    --eval_batch_size $batch_size
+    --learning_rate $lr
+    --train_steps $train_steps
+    --eval_steps $eval_steps
+
+CUDA_VISIBLE_DEVICES=4 python CodeLlama/finetuning.py
+    --quantization
+    --use_peft
+    --peft_method lora
+    --batch_size_training 10
+    --val_batch_size 10
+    --context_length 1024
+    --num_epochs 5
+    --model_name meta-llama/Llama-3.1-8B
+    --alpaca_dataset.train_data_path data/bigvul/alpaca/bigvul_512-1024_train.json
+    --alpaca_dataset.valid_data_path data/bigvul/alpaca/bigvul_512-1024_validate.json
+    --output_dir outputs/llama3.1_lora/bigvul_512-1024  2>&1 1>finetuning_llama3.1_lora_bigvul_512-1024.log
+
+# TEST
+CUDA_VISIBLE_DEVICES=2 python CodeLlama/inference.py
+    --tuned_model outputs/llama2_lora/bigvul_0-512/epoch-2
+    --base_model meta-llama/Llama-2-7b-hf
+    --data_file data/bigvul/alpaca/bigvul_0-512_test.json
+    --csv_path llama2_lora_bigvul_0-512.csv 2>&1 1>llama2_lora_bigvul_0-512.log
+
+CUDA_VISIBLE_DEVICES=0 python UniXcoder/code/run.py
+    --output_dir="outputs/UniXcoder/devign_0-512/"
+    --model_name_or_path=microsoft/codebert-base
+    --do_train
+    --do_eval
+    --do_test
+    --train_data_file="data/devign/alpaca/devign_0-512_train.json"
+    --eval_data_file="data/devign/alpaca/devign_0-512_validate.json"
+    --test_data_file="data/devign/alpaca/devign_0-512_test.json"
+    --num_train_epochs 5
+    --block_size 512
+    --train_batch_size 32
+    --eval_batch_size 64
+    --learning_rate 2e-5
+    --max_grad_norm 1.0
+    --seed 42
+    2>&1 1>"train_UniXcoder_devign_0-512.log"
