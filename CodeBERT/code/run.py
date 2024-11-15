@@ -61,6 +61,20 @@ MODEL_CLASSES = {
 }
 
 
+def fpr_score(y_true, y_pred):
+    y_true, y_pred = np.array(y_true, dtype=np.int32), np.array(y_pred, dtype=np.int32)
+    TP = sum((y_true == 1) & (y_pred == 1))
+    FP = sum((y_true == 0) & (y_pred == 1))
+    TN = sum((y_true == 0) & (y_pred == 0))
+    FN = sum((y_true == 1) & (y_pred == 0))
+
+    if (FP + TN) == 0:
+        return 0.
+    else:
+        FPR = FP / (FP + TN)
+        return FPR
+
+
 class InputFeatures(object):
     """A single training/test features for a example."""
     def __init__(self,
@@ -345,9 +359,12 @@ def test(args, model, tokenizer, split="test"):
     recall = recall_score(y_trues, y_preds)
     precision = precision_score(y_trues, y_preds)
     f1 = f1_score(y_trues, y_preds)
+    fpr = fpr_score(y_trues, y_preds)
 
+    temp_df = pd.DataFrame({'Label': [], 'Prediction': []})
+    temp_df.to_csv(args.csv_path, index=False, mode='w', header=True)
     for label, pred in zip(y_trues, y_preds):
-        temp_df = pd.DataFrame({'Label': [label], 'Prediction': [pred]})
+        temp_df = pd.DataFrame({'Label': [int(label)], 'Prediction': [int(pred)]})
         temp_df.to_csv(args.csv_path, index=False, mode='a', header=False)
 
     result = {
@@ -355,6 +372,7 @@ def test(args, model, tokenizer, split="test"):
         "test_recall": float(recall),
         "test_precision": float(precision),
         "test_f1": float(f1),
+        "test_fpr": float(fpr)
     }
 
     logger.info("***** Test results *****")

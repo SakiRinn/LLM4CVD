@@ -1,14 +1,13 @@
+import numpy as np
+from regex import F
 import torch
 import os
 import sys
 import json
-import copy
 import pandas as pd
 import argparse
 from peft import PeftModel
-from transformers import GenerationConfig
 from transformers import LlamaTokenizer, CodeLlamaTokenizer, LlamaForCausalLM,AutoTokenizer,AutoModelForCausalLM
-from datasets import load_dataset
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 #
 MODEL_CLASSES = {
@@ -36,6 +35,19 @@ def parse_args():
     parser.add_argument("--data_file", required=True, help="Path to the json file containing test dataset.")
     parser.add_argument("--csv_path", default='results.csv', help="Path to save the CSV results.")
     return parser.parse_args()
+
+def fpr_score(y_true, y_pred):
+    y_true, y_pred = np.array(y_true, dtype=np.int32), np.array(y_pred, dtype=np.int32)
+    TP = sum((y_true == 1) & (y_pred == 1))
+    FP = sum((y_true == 0) & (y_pred == 1))
+    TN = sum((y_true == 0) & (y_pred == 0))
+    FN = sum((y_true == 1) & (y_pred == 0))
+
+    if (FP + TN) == 0:
+        return 0.
+    else:
+        FPR = FP / (FP + TN)
+        return FPR
 
 def main():
     args = parse_args()
@@ -90,6 +102,7 @@ def main():
                 return_dict_in_generate=True,
                 output_scores=True,
                 max_new_tokens=8,
+                # do_sample=False
             )
             logits = generation_output.scores
             probabilities = [torch.softmax(logit, dim=-1) for logit in logits]
@@ -114,7 +127,7 @@ def main():
             code = example_content.get("input", "")
             temp_df = pd.DataFrame({'Index': i, 'Code': [code], 'Label': [expected_response], 'Prediction': [prediction_result],
                                     'Prob': [confidence_score.item()], 'Response': [response]})
-            temp_df.to_csv(args.csv_path, index=False, mode='a', header=False)
+            temp_df.to_csv(args.csv_path, index=False, mode='w' if i == 0 else 'a', header=i == 0)
 
         if i > 0 and i % 100 == 0:
             # Calculate
@@ -133,6 +146,9 @@ def print_metrics(label_list, prediction_list):
 
     recall = recall_score(label_list, prediction_list)
     print(f'recall：{recall:.4f}')
+
+    fpr = fpr_score(label_list, prediction_list)
+    print(f'FPR：{fpr:.4f}')
 
     f1 = f1_score(label_list, prediction_list)
     print(f'F1：{f1:.4f}')

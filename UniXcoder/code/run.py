@@ -46,6 +46,20 @@ import sys
 logger = logging.getLogger(__name__)
 
 
+def fpr_score(y_true, y_pred):
+    y_true, y_pred = np.array(y_true, dtype=np.int32), np.array(y_pred, dtype=np.int32)
+    TP = sum((y_true == 1) & (y_pred == 1))
+    FP = sum((y_true == 0) & (y_pred == 1))
+    TN = sum((y_true == 0) & (y_pred == 0))
+    FN = sum((y_true == 1) & (y_pred == 0))
+
+    if (FP + TN) == 0:
+        return 0.
+    else:
+        FPR = FP / (FP + TN)
+        return FPR
+
+
 class InputFeatures(object):
     """A single training/test features for a example."""
 
@@ -301,14 +315,18 @@ def test(args, model, tokenizer, data_file):
             f.write('CWE,Label,Prediction,Prob\n')
 
     probs2 = [[prob[0], 1 - prob[0]] for prob in probs]
+    temp_df = pd.DataFrame({'CWE': [], 'Label': [], 'Prediction': [], 'Prob': []})
+    temp_df.to_csv(args.csv_path, index=False, mode='w', header=True)
     for cwe, label, pred, prob in zip(cwe_list, labels, preds, probs2):
         temp_df = pd.DataFrame({'CWE': [cwe], 'Label': [label], 'Prediction': [pred], 'Prob': [prob]})
         temp_df.to_csv(args.csv_path, index=False, mode='a', header=False)
+
     result = {
         "eval_acc": accuracy_score(labels, preds),
         "eval_precision": precision_score(labels, preds),
         "eval_recall": recall_score(labels, preds),
         "eval_f1": f1_score(labels, preds),
+        "eval_fpr": fpr_score(labels, preds),
     }
     return result
 

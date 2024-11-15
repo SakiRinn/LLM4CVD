@@ -21,50 +21,39 @@ echo "Length: $(echo $LENGTH | awk -F'-' '{print $2}')"
 
 if [[ "$MODEL_NAME" == "Devign" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/main.py \
-    --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
+    --output_dir "outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
     --csv_path="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/results.csv" \
-    --do_train \
-    --do_eval \
     --do_test \
-    --input_dir="data/${DATASET_NAME}/graph/${DATASET_NAME}_${LENGTH}/" \
+    --input_dir "data/${DATASET_NAME}/graph/${DATASET_NAME}_${LENGTH}/" \
     --seed 42 \
-    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    >"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/test_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 elif [[ "$MODEL_NAME" == "GraphCodeBERT" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
     --csv_path="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/results.csv" \
     --tokenizer_name=microsoft/codebert-base \
     --model_name_or_path=microsoft/codebert-base \
-    --do_train \
-    --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
     --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_test.json" \
-    --epoch 5 \
     --block_size $(echo $LENGTH | awk -F'-' '{print $2}') \
-    --train_batch_size 32 \
     --eval_batch_size 64 \
-    --evaluate_during_training \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/test_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 elif [[ "$MODEL_NAME" == "UniXcoder" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
     --csv_path="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/results.csv" \
     --model_name_or_path=microsoft/codebert-base \
-    --do_train \
-    --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
     --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_test.json" \
-    --num_train_epochs 5 \
     --block_size $(echo $LENGTH | awk -F'-' '{print $2}') \
-    --train_batch_size 32 \
     --eval_batch_size 64 \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/test_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 else
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
@@ -72,17 +61,12 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --model_type=roberta \
     --tokenizer_name=microsoft/codebert-base \
     --model_name_or_path=microsoft/codebert-base \
-    --do_train \
-    --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
     --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_test.json" \
-    --epoch 5 \
     --block_size $(echo $LENGTH | awk -F'-' '{print $2}') \
-    --train_batch_size 32 \
     --eval_batch_size 64 \
-    --evaluate_during_training \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
+    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/test_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"
 fi

@@ -82,6 +82,20 @@ for lang in dfg_function:
     parsers[lang] = parser
 
 
+def fpr_score(y_true, y_pred):
+    y_true, y_pred = np.array(y_true, dtype=np.int32), np.array(y_pred, dtype=np.int32)
+    TP = sum((y_true == 1) & (y_pred == 1))
+    FP = sum((y_true == 0) & (y_pred == 1))
+    TN = sum((y_true == 0) & (y_pred == 0))
+    FN = sum((y_true == 1) & (y_pred == 0))
+
+    if (FP + TN) == 0:
+        return 0.
+    else:
+        FPR = FP / (FP + TN)
+        return FPR
+
+
 # remove comments, tokenize code and extract dataflow
 def extract_dataflow(code, parser, lang):
     # remove comments
@@ -447,20 +461,24 @@ def test(args, model, tokenizer, best_threshold=0):
         with open(args.csv_path, 'w') as f:
             f.write('Label,Prediction\n')
 
+    temp_df = pd.DataFrame({'Label': [], 'Prediction': []})
+    temp_df.to_csv(args.csv_path, index=False, mode='w', header=True)
     for label, pred in zip(y_trues, y_preds):
-        temp_df = pd.DataFrame({'Label': [label], 'Prediction': [pred]})
+        temp_df = pd.DataFrame({'Label': [int(label)], 'Prediction': [int(pred)]})
         temp_df.to_csv(args.csv_path, index=False, mode='a', header=False)
+
     accuracy = accuracy_score(y_trues, y_preds)
     recall = recall_score(y_trues, y_preds)
     precision = precision_score(y_trues, y_preds)
     f1 = f1_score(y_trues, y_preds)
+    fpr = fpr_score(y_trues, y_preds)
     result = {
         "eval_acc": float(accuracy),
         "eval_precision": float(precision),
         "eval_recall": float(recall),
         "eval_f1": float(f1),
-        "eval_threshold": best_threshold,
-
+        "eval_fpr": float(fpr),
+        "eval_threshold": best_threshold
     }
 
     logger.info("***** Test results *****")

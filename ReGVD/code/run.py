@@ -67,6 +67,21 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
+
+def fpr_score(y_true, y_pred):
+    y_true, y_pred = np.array(y_true, dtype=np.int32), np.array(y_pred, dtype=np.int32)
+    TP = sum((y_true == 1) & (y_pred == 1))
+    FP = sum((y_true == 0) & (y_pred == 1))
+    TN = sum((y_true == 0) & (y_pred == 0))
+    FN = sum((y_true == 1) & (y_pred == 0))
+
+    if (FP + TN) == 0:
+        return 0.
+    else:
+        FPR = FP / (FP + TN)
+        return FPR
+
+
 class InputFeatures(object):
     """A single training/test features for a example."""
     def __init__(self,
@@ -372,18 +387,25 @@ def test(args, model, tokenizer):
                 f.write(example.idx+'\t1\n')
             else:
                 f.write(example.idx+'\t0\n')
+
     accuracy = accuracy_score(labels, preds)
     recall = recall_score(labels, preds)
     precision = precision_score(labels, preds)
     f1 = f1_score(labels, preds)
+    fpr = fpr_score(labels, preds)
+
+    temp_df = pd.DataFrame({'Label': [], 'Prediction': []})
+    temp_df.to_csv(args.csv_path, index=False, mode='w', header=True)
     for label, pred in zip(labels, preds):
-        temp_df = pd.DataFrame({'Label': [label], 'Prediction': [pred]})
+        temp_df = pd.DataFrame({'Label': [int(label)], 'Prediction': [int(pred)]})
         temp_df.to_csv(args.csv_path, index=False, mode='a', header=False)
+
     result = {
         "test_acc": round(test_acc, 4),
         "eval_precision": float(precision),
         "eval_recall": float(recall),
         "eval_f1": float(f1),
+        "eval_fpr": float(fpr)
     }
     return result
 
