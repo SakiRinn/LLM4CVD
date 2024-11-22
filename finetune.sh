@@ -2,11 +2,12 @@
 DATASET_NAME=$1
 MODEL_NAME=$2
 LENGTH=$3
-CUDA=${4:-"0"}
+BATCH_SIZE=$4
+CUDA=${5:-"0"}
 
 # Check if the first three parameters are provided
 if [ $# -lt 3 ]; then
-    echo "Usage: $0 <DATASET_NAME> <MODEL_NAME> <LENGTH> [CUDA]"
+    echo "Usage: $0 <DATASET_NAME> <MODEL_NAME> <LENGTH> <BATCH_SIZE> [CUDA]"
     exit 1
 fi
 
@@ -21,19 +22,9 @@ MODEL_MAP["llama3.1"]='meta-llama/Llama-3.1-8B'
 MODEL_MAP["llama2"]="meta-llama/Llama-2-7b-hf"
 MODEL_MAP["codellama"]="codellama/CodeLlama-7b-hf"
 
-declare -A BATCH_MAP
-BATCH_MAP["llama2_0-512"]=20
-BATCH_MAP["llama2_512-1024"]=10
-BATCH_MAP["codellama_0-512"]=20
-BATCH_MAP["codellama_512-1024"]=10
-BATCH_MAP["llama3_0-512"]=16
-BATCH_MAP["llama3_512-1024"]=8
-BATCH_MAP["llama3.1_0-512"]=16
-BATCH_MAP["llama3.1_512-1024"]=8
-
 mkdir -p "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/"
 
-echo "Batch size: ${BATCH_MAP["${MODEL_NAME}_${LENGTH}"]}"
+echo "Batch size: ${BATCH_SIZE}"
 echo "Length: $(echo $LENGTH | awk -F'-' '{print $2}')"
 
 if [[ "$MODEL_NAME" == "StarCoder" ]]; then
@@ -41,8 +32,8 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/finetune.py \
     --quantization \
     --use_peft \
     --peft_method lora \
-    --batch_size_training ${BATCH_MAP["${MODEL_NAME}_${LENGTH}"]} \
-    --val_batch_size ${BATCH_MAP["${MODEL_NAME}_${LENGTH}"]} \
+    --batch_size_training $BATCH_SIZE \
+    --val_batch_size $BATCH_SIZE \
     --context_length $(echo $LENGTH | awk -F'-' '{print $2}') \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
@@ -55,8 +46,8 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/finetuning.py \
     --quantization \
     --use_peft \
     --peft_method lora \
-    --batch_size_training ${BATCH_MAP["${MODEL_NAME}_${LENGTH}"]} \
-    --val_batch_size ${BATCH_MAP["${MODEL_NAME}_${LENGTH}"]} \
+    --batch_size_training $BATCH_SIZE \
+    --val_batch_size $BATCH_SIZE \
     --context_length $(echo $LENGTH | awk -F'-' '{print $2}') \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \

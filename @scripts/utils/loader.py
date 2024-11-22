@@ -1,3 +1,4 @@
+import os
 import os.path as osp
 import re
 import json
@@ -6,7 +7,38 @@ from preprocess.d2a import ALL_PROJECTS
 from utils import save_dataset_dict
 
 
-def format_devign(json_path):
+def load_json(json_path):
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+    print(f'Success to load {json_path}.')
+    return data
+
+
+def load_splitted_json(json_dir, prefix=''):
+    dataset_dict = {}
+
+    for filename in os.listdir(json_dir):
+        match = re.match(r'^(.*)_(.*)\.json$', filename)
+        if not match:
+            continue
+
+        key = match.group(2)
+        if not prefix:
+            prefix = match.group(1)
+            print(f'Default prefix: {prefix}')
+        if prefix != match.group(1):
+            continue
+
+        json_path = os.path.join(json_dir, filename)
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        dataset_dict[key] = data
+        print(f'Success to load {json_path}.')
+
+    return dataset_dict
+
+
+def load_devign(json_path):
     with open(json_path, 'r') as f:
         raw_data = json.load(f)
 
@@ -25,7 +57,7 @@ def format_devign(json_path):
     return data
 
 
-def format_reveal(json_dir):
+def load_reveal(json_dir):
     data = []
     with open(osp.join(json_dir, 'non-vulnerables.json'), 'r') as f:
         data += [{**raw_entry, 'label': 0, 'index': idx}
@@ -36,7 +68,7 @@ def format_reveal(json_dir):
     return data
 
 
-def format_bigvul(json_path):
+def load_bigvul(json_path):
     with open(json_path, "r") as f:
         raw_data = json.load(f)
 
@@ -56,7 +88,7 @@ def format_bigvul(json_path):
     return data
 
 
-def format_d2a(json_dir):
+def load_d2a(json_dir):
     idx = 0
     data = {}
 
@@ -131,7 +163,7 @@ def format_d2a(json_dir):
     return list(data.values())
 
 
-def format_diversevul(jsonl_path):
+def load_diversevul(jsonl_path):
     with open(jsonl_path, 'r') as f:
         raw_data = [json.loads(line) for line in f]
 
@@ -158,7 +190,7 @@ def format_diversevul(jsonl_path):
     return data
 
 
-def format_draper(json_dir):
+def load_draper(json_dir):
     file_paths = [osp.join(json_dir, "VDISC_train.json"),
                   osp.join(json_dir, "VDISC_validate.json"),
                   osp.join(json_dir, "VDISC_test.json")]

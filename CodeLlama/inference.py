@@ -106,7 +106,10 @@ def main():
             )
             logits = generation_output.scores
             probabilities = [torch.softmax(logit, dim=-1) for logit in logits]
-            prob_dist = probabilities[-2]
+            try:
+                prob_dist = probabilities[-2]
+            except IndexError:
+                prob_dist = torch.tensor([0.0])
             confidence_score, predicted_token_id = torch.max(prob_dist, dim=-1)
 
             s = generation_output.sequences[0]

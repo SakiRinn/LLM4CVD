@@ -3,10 +3,10 @@ import os.path as osp
 from glob import glob
 
 from utils.process import *
-from utils.formatter import *
+from utils.loader import *
 from utils.misc import to_alpaca, to_alpaca_and_combine
 
-os.chdir('..')
+os.chdir(osp.join(osp.dirname(__file__), '..'))
 
 def split_jsons(input_dir, output_dir):
     for file in os.listdir(input_dir):
@@ -46,7 +46,7 @@ def jsons_to_alpaca(input_dir, output_dir, dataset_name, lengths=[512, 1024]):
 
 
 def main_devign():
-    data = format_devign('data/devign/function.json')
+    data = load_devign('data/devign/function.json')
     datasets = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')
     datasets = truncate_by_ratio(datasets)
     save_dataset_dict(datasets, 'data/devign/length', prefix='devign')
@@ -60,7 +60,7 @@ def main_devign():
 
 
 def main_reveal():
-    data = format_reveal('data/reveal/')
+    data = load_reveal('data/reveal/')
     datasets = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')
     datasets = truncate_by_ratio(datasets)
     save_dataset_dict(datasets, 'data/reveal/length', prefix='reveal')
@@ -74,7 +74,7 @@ def main_reveal():
 
 
 def main_bigvul():
-    data = format_bigvul('data/bigvul/MSR_data_cleaned.json')
+    data = load_bigvul('data/bigvul/MSR_data_cleaned.json')
     datasets = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')
     datasets = truncate_by_ratio(datasets)
     save_dataset_dict(datasets, 'data/bigvul/length', prefix='bigvul')
@@ -88,7 +88,7 @@ def main_bigvul():
 
 
 def main_diversevul():
-    data = format_diversevul('data/diversevul/diversevul_20230702.jsonl')
+    data = load_diversevul('data/diversevul/diversevul_20230702.jsonl')
     datasets = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')
     datasets = truncate_by_ratio(datasets)
     save_dataset_dict(datasets, 'data/diversevul/length', prefix='diversevul')
@@ -102,7 +102,7 @@ def main_diversevul():
 
 
 def main_draper():
-    dataset_dict = format_draper('data/draper/json')
+    dataset_dict = load_draper('data/draper')
     data = []
     for v in dataset_dict.values():
         data += v
@@ -120,7 +120,7 @@ def main_draper():
 
 
 def main_d2a():
-    data = format_d2a('data/d2a/json')
+    data = load_d2a('data/d2a')
     datasets = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')
     datasets = truncate_by_ratio(datasets)
     save_dataset_dict(datasets, 'data/d2a/length', prefix='d2a')

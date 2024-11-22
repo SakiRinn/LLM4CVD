@@ -3,6 +3,8 @@ import json
 import numpy as np
 from transformers import AutoTokenizer
 
+from utils.process import split_by_length
+
 
 def len_count(data, tokenizer_name: str, min_length=0, max_length=99999):
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
@@ -17,13 +19,17 @@ def len_count(data, tokenizer_name: str, min_length=0, max_length=99999):
     return count
 
 
-def load_and_count_len(json_paths: list['str'], tokenizer_name: str, min_length=512, max_length=1024):
-    total_count = 0
+def load_and_count_len(json_paths: list['str'], tokenizer_name: str, lengths=[512, 1024]):
+    data = []
     for json_path in json_paths:
         with open(json_path, 'r') as f:
-            data = json.load(f)
-        total_count += len_count(data, tokenizer_name, min_length, max_length)
-    return total_count
+            data.extend(json.load(f))
+
+    dataset_dict = split_by_length(data, tokenizer_name, lengths)
+    for k, v in dataset_dict.items():
+        print(f"{k}, len: {len(v)}")
+
+    return dataset_dict
 
 
 def pos_count(data, binary_tag='label'):
@@ -60,20 +66,19 @@ def fpr_score(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    dataset_name = 'reveal'
+    dataset_name = 'diversevul'
     tokenizer_name = 'meta-llama/Meta-Llama-3-8B'
 
     json_paths = [
-        f'data/{dataset_name}/length/{dataset_name}_0-512.json',
         # f'data/{dataset_name}/length/{dataset_name}_512-1024.json',
         # f'data/{dataset_name}/length/{dataset_name}_1024-*.json'
+        f'data/{dataset_name}_subsampled/{dataset_name}_0·3.json'
     ]
 
-    # print(f'-----> {dataset_name} <-----')
-    # print('[Length]')
-    # print(f'0~512: {load_and_count_len(json_paths, tokenizer_name, 0, 512)}')
-    # print(f'512~1024: {load_and_count_len(json_paths, tokenizer_name, 512, 1024)}')
-    # print(f'1024~: {load_and_count_len(json_paths, tokenizer_name, 1024, 99999)}')
+    print(f'-----> {dataset_name} <-----')
+    print('[Length]')
+    dataset_dict = load_and_count_len(json_paths, tokenizer_name,
+                                      [128, 256, 384, 512, 640, 768, 896, 1024])
 
     num_pos, num_neg = load_and_count_pos_neg(json_paths)
     print('[Pos/Neg]')

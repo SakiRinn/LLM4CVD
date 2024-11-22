@@ -4,6 +4,33 @@ import pandas as pd
 from transformers import AutoTokenizer
 
 
+def truncate(data, max_samples=25000, shuffle=True):
+    if len(data) <= max_samples:
+        print('Stay data as the same.')
+    len_ratio = (max_samples + 0.1) / len(data)
+
+    pos_samples = [e for e in data if 'label' in e.keys() and e['label'] == 1]
+    neg_samples = [e for e in data if 'label' in e.keys() and e['label'] == 0]
+
+    if shuffle:
+        random.shuffle(pos_samples)
+    if shuffle:
+        random.shuffle(neg_samples)
+
+    pos_samples = pos_samples[:round(len(pos_samples) * len_ratio)]
+    neg_samples = neg_samples[:round(len(neg_samples) * len_ratio)]
+    data = pos_samples + neg_samples
+
+    if shuffle:
+        random.shuffle(data)
+    else:
+        df = pd.DataFrame(data)
+        df_sorted = df.sort_values(by='index')
+        data = df_sorted.to_dict(orient='records')
+
+    return data
+
+
 def truncate_by_ratio(dataset_dict, max_samples=25000, shuffle=True):
     max_len = 1
     for key, data in dataset_dict.items():
@@ -77,3 +104,24 @@ def split_by_length(data, tokenizer_name: str, lengths=[512, 1024]):
         dataset_dict[f'{min_length}-{max_length if max_length != 99999 else "*"}'] = dataset
 
     return dataset_dict
+
+
+def sampling_by_pos_ratio(data, pos_ratio=0.5, shuffle=True):
+    pos_samples = [e for e in data if 'label' in e.keys() and e['label'] == 1]
+    neg_samples = [e for e in data if 'label' in e.keys() and e['label'] == 0]
+    if shuffle:
+        random.shuffle(pos_samples)
+    if shuffle:
+        random.shuffle(neg_samples)
+
+    num_neg = round(len(pos_samples) / pos_ratio - len(pos_samples))
+    neg_samples = neg_samples[:num_neg]
+    new_data = pos_samples + neg_samples
+
+    if shuffle:
+        random.shuffle(new_data)
+    else:
+        df = pd.DataFrame(new_data)
+        df_sorted = df.sort_values(by='index')
+        new_data = df_sorted.to_dict(orient='records')
+    return new_data

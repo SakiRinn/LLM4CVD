@@ -18,6 +18,29 @@
 ./inference.sh    draper        codellama   0-512       0;
 ./inference.sh    draper        codellama   512-1024    0;
 
+./finetune.sh    mix llama3.1  0-128    64      0;
+./inference.sh   mix llama3.1  0-128            0;
+./finetune.sh    mix llama3.1  128-256  32      0;
+./inference.sh   mix llama3.1  128-256          0;
+./finetune.sh    mix llama3.1  256-384  24      0;
+./inference.sh   mix llama3.1  256-384          0;
+./finetune.sh    mix llama3.1  384-512  16      0;
+./inference.sh   mix llama3.1  384-512          0;
+./finetune.sh    mix llama3.1  512-640  14      0;
+./inference.sh   mix llama3.1  512-640          0;
+./finetune.sh    mix llama3.1  640-768  12      0;
+./inference.sh   mix llama3.1  640-768          0;
+./finetune.sh    mix llama3.1  768-896  10      0;
+./inference.sh   mix llama3.1  768-896          0;
+./finetune.sh    mix llama3.1  896-1024  8      0;
+./inference.sh   mix llama3.1  896-1024         0;
+
+./finetune_subsampled.sh    diversevul  llama3.1    0·1     0;
+./finetune_subsampled.sh    diversevul  llama3.1    0·2     0;
+./finetune_subsampled.sh    diversevul  llama3.1    0·3     0;
+./finetune_subsampled.sh    diversevul  llama3.1    0·4     0;
+./finetune_subsampled.sh    diversevul  llama3.1    0·5     0;
+
 ./train_baseline.sh   devign  CodeBERT        0-512     0;
 ./train_baseline.sh   devign  UniXcoder       0-512     0;
 ./train_baseline.sh   devign  ReGVD           0-512     0;
@@ -38,11 +61,11 @@
 ./train_baseline.sh   draper        Devign      0-512       0;
 ./train_baseline.sh   draper        Devign      512-1024    0;
 
-./train_baseline.sh   devign        CodeBERT      0-512       0;
-./train_baseline.sh   reveal        CodeBERT      0-512       0;
-./train_baseline.sh   bigvul        CodeBERT      0-512       0;
-./train_baseline.sh   diversevul    CodeBERT      0-512       0;
-./train_baseline.sh   draper        CodeBERT      0-512       0;
+./test_baseline.sh   devign        CodeBERT      0-512       0;
+./test_baseline.sh   reveal        CodeBERT      0-512       0;
+./test_baseline.sh   bigvul        CodeBERT      0-512       0;
+./test_baseline.sh   diversevul    CodeBERT      0-512       0;
+./test_baseline.sh   draper        CodeBERT      0-512       0;
 
 ./to_graph.sh   devign  0-512;
 ./to_graph.sh   devign  512-1024;
@@ -55,16 +78,11 @@
 ./to_graph.sh   draper  0-512;
 ./to_graph.sh   draper  512-1024;
 
-./test_baseline.sh   devign  CodeBERT        0-512     0;
-./test_baseline.sh   devign  UniXcoder       0-512     0;
-./test_baseline.sh   devign  ReGVD           0-512     0;
-./test_baseline.sh   devign  GraphCodeBERT   0-512     0;
-./test_baseline.sh   devign  Devign          0-512     0;
-
 python @scripts/to_graph/main.py data/reveal/length/reveal_0-512.json --output-dir data/reveal/graph
 python Devign/main.py --input_dir data/diversevul/graph/diversevul_512-1024 --output_dir outputs/Devign/diversevul_512-1024 --csv_path outputs/Devign/diversevul_512-1024/results.csv >train_Devign_diversevul_512-1024.log
 
 python Devign/main.py --input_dir data/diversevul/graph/diversevul_512-1024 --output_dir debug/ --do_test > test.log
+python Devign/main.py --input_dir a_graph/a --output_dir debug/ --do_train
 
 python run.py
     --do_train
