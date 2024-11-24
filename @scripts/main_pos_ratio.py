@@ -3,7 +3,7 @@ import json
 import os
 import os.path as osp
 
-from utils.loader import load_diversevul, load_splitted_json, load_json, save_dataset_dict
+from utils.loader import load_diversevul, load_draper, load_splitted_json, load_json, save_dataset_dict
 from utils.process import *
 from utils import to_alpaca
 
@@ -18,7 +18,7 @@ def split_jsons(input_dir, output_dir):
         with open(json_path, "r") as f:
             data = json.load(f)
 
-        datasets = train_test_split(data)
+        datasets = {'train': data}
         save_dataset_dict(datasets, output_dir, prefix=file.split(".")[0])
 
 
@@ -41,20 +41,70 @@ def jsons_to_alpaca(input_dir, output_dir, dataset_name, pos_ratios=[0.25, 0.5])
             to_alpaca(path, osp.join(output_dir, osp.basename(path)))
 
 
-def main():
+def main_diversevul():
+    pos_ratios = [0.1, 0.2, 0.3, 0.4, 0.5]
+    len_ratios = [0.2812, 0.2592, 0.254, 0.1304, 0.0752]
+
     data = load_diversevul('data/diversevul/diversevul_20230702.jsonl')
-    data = split_by_length(data, 'meta-llama/Meta-Llama-3-8B')['0-512']
+    with open('data/diversevul/split/diversevul_0-512_test.json', "r") as f:
+        test_data = json.load(f)
+    test_indices = [item['index'] for item in test_data]
+    data = [item for item in data if item['index'] not in test_indices]
+
     pos_ratio_datasets = {}
-    for i in [0.1, 0.2, 0.25, 0.3, 0.4, 0.5]:
-        sampled_data = sampling_by_pos_ratio(data, i)
-        pos_ratio_datasets[str(i).replace('.', '·')] = truncate(sampled_data, 25000)
+    for pr in pos_ratios:
+        sampled_data = sampling_by_pos_ratio(data, pr)
+        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [64, 128, 256, 384, 512]).values())
+        del datasets[-1]
+        datasets = [truncate(dataset, round(20000 * len_ratios[i])) for i, dataset in enumerate(datasets)]
+
+        new_data = []
+        for i in range(len(datasets)):
+            new_data += datasets[i]
+        truncate(new_data, 20000)
+        pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
 
     save_dataset_dict(pos_ratio_datasets, 'data/diversevul_subsampled/', prefix='diversevul')
 
     split_jsons('data/diversevul_subsampled/', 'data/diversevul_subsampled/split')
     jsons_to_alpaca('data/diversevul_subsampled/split', 'data/diversevul_subsampled/alpaca',
-                    'diversevul', pos_ratios=[0.1, 0.2, 0.25, 0.3, 0.4, 0.5])
+                    'diversevul', pos_ratios=pos_ratios)
+
+
+def main_draper():
+    pos_ratios = [0.1, 0.2, 0.3, 0.4, 0.5]
+    len_ratios = [0.11, 0.29, 0.3396, 0.1624, 0.098]
+
+    dataset_dict = load_draper('data/draper')
+    data = []
+    for v in dataset_dict.values():
+        data += v
+
+    with open('data/draper/split/draper_0-512_test.json', "r") as f:
+        test_data = json.load(f)
+    test_indices = [item['index'] for item in test_data]
+    data = [item for item in data if item['index'] not in test_indices]
+
+    pos_ratio_datasets = {}
+    for pr in pos_ratios:
+        sampled_data = sampling_by_pos_ratio(data, pr)
+        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [64, 128, 256, 384, 512]).values())
+        del datasets[-1]
+        datasets = [truncate(dataset, round(20000 * len_ratios[i])) for i, dataset in enumerate(datasets)]
+
+        new_data = []
+        for i in range(len(datasets)):
+            new_data += datasets[i]
+        truncate(new_data, 20000)
+        pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
+
+    save_dataset_dict(pos_ratio_datasets, 'data/draper_subsampled/', prefix='draper')
+
+    split_jsons('data/draper_subsampled/', 'data/draper_subsampled/split')
+    jsons_to_alpaca('data/draper_subsampled/split', 'data/draper_subsampled/alpaca',
+                    'draper', pos_ratios=pos_ratios)
 
 
 if __name__ == "__main__":
-    main()
+    main_diversevul()
+    main_draper()

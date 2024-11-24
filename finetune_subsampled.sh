@@ -2,12 +2,11 @@
 DATASET_NAME=$1
 MODEL_NAME=$2
 POS_RATIO=$3
-BATCH_SIZE=$4
-CUDA=${5:-"0"}
+CUDA=${4:-"0"}
 
 # Check if the first three parameters are provided
 if [ $# -lt 3 ]; then
-    echo "Usage: $0 <DATASET_NAME> <MODEL_NAME> <POS_RATIO> <BATCH_SIZE> [CUDA]"
+    echo "Usage: $0 <DATASET_NAME> <MODEL_NAME> <POS_RATIO> [CUDA]"
     exit 1
 fi
 
@@ -44,7 +43,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/finetune.py \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
     --train_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --valid_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
+    --valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
     >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
 else
@@ -58,13 +57,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/finetuning.py \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
     --alpaca_dataset.train_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --alpaca_dataset.valid_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
+    --alpaca_dataset.valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
     >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
 fi
-
-CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/inference.py \
-    --base_model ${MODEL_MAP[$MODEL_NAME]} \
-    --data_file "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
-    --csv_path "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
-    2>&1 1>"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"

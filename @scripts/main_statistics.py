@@ -66,19 +66,19 @@ def fpr_score(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    dataset_name = 'diversevul'
+    dataset_name = 'draper'
     tokenizer_name = 'meta-llama/Meta-Llama-3-8B'
 
     json_paths = [
         # f'data/{dataset_name}/length/{dataset_name}_512-1024.json',
         # f'data/{dataset_name}/length/{dataset_name}_1024-*.json'
-        f'data/{dataset_name}_subsampled/{dataset_name}_0·3.json'
+        'data/draper/split/draper_0-512_test.json'
     ]
 
     print(f'-----> {dataset_name} <-----')
     print('[Length]')
     dataset_dict = load_and_count_len(json_paths, tokenizer_name,
-                                      [128, 256, 384, 512, 640, 768, 896, 1024])
+                                      [64, 128, 256, 384, 512])
 
     num_pos, num_neg = load_and_count_pos_neg(json_paths)
     print('[Pos/Neg]')

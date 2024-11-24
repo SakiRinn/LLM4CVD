@@ -6,7 +6,11 @@ from transformers import AutoTokenizer
 
 def truncate(data, max_samples=25000, shuffle=True):
     if len(data) <= max_samples:
-        print('Stay data as the same.')
+        print(f'Stay data as the same {len(data)}.')
+        if shuffle:
+            random.shuffle(data)
+        return data
+
     len_ratio = (max_samples + 0.1) / len(data)
 
     pos_samples = [e for e in data if 'label' in e.keys() and e['label'] == 1]
