@@ -28,6 +28,6 @@ echo "POS_RATIO: $(echo $POS_RATIO)"
 CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/inference.py \
     --base_model ${MODEL_MAP[$MODEL_NAME]} \
     --tuned_model "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/epoch-4" \
-    --data_file "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_test.json" \
+    --data_file "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
     --csv_path "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
     >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"

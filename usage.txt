@@ -40,6 +40,17 @@
 ./finetune.sh    mix llama3.1  768-896  10      2;
 ./inference.sh   mix llama3.1  768-896          2;
 
+./finetune_ablation.sh      devign llama3.1  16  4    0;
+./inference_ablation.sh     devign llama3.1  16  4    0;
+./finetune_ablation.sh      devign llama3.1  16  8    1;
+./inference_ablation.sh     devign llama3.1  16  8    1;
+./finetune_ablation.sh      devign llama3.1  16  16   2;
+./inference_ablation.sh     devign llama3.1  16  16   2;
+./finetune_ablation.sh      devign llama3.1  16  32   3;
+./inference_ablation.sh     devign llama3.1  16  32   3;
+./finetune_ablation.sh      devign llama3.1  16  64   4;
+./inference_ablation.sh     devign llama3.1  16  64   4;
+
 ./finetune_subsampled.sh     diversevul  llama3.1    0·1     0;
 ./inference_subsampled.sh    diversevul  llama3.1    0·1     0;
 ./finetune_subsampled.sh     diversevul  llama3.1    0·2     0;
@@ -53,10 +64,10 @@
 
 ./finetune_subsampled.sh     draper  llama3.1    0·1     0;
 ./inference_subsampled.sh    draper  llama3.1    0·1     0;
-./finetune_subsampled.sh     draper  llama3.1    0·2     0;
-./inference_subsampled.sh    draper  llama3.1    0·2     0;
-./finetune_subsampled.sh     draper  llama3.1    0·3     1;
-./inference_subsampled.sh    draper  llama3.1    0·3     1;
+./finetune_subsampled.sh     draper  llama3.1    0·2     1;
+./inference_subsampled.sh    draper  llama3.1    0·2     1;
+./finetune_subsampled.sh     draper  llama3.1    0·3     0;
+./inference_subsampled.sh    draper  llama3.1    0·3     0;
 ./finetune_subsampled.sh     draper  llama3.1    0·4     1;
 ./inference_subsampled.sh    draper  llama3.1    0·4     1;
 ./finetune_subsampled.sh     draper  llama3.1    0·5     2;

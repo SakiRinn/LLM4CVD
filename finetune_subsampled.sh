@@ -43,7 +43,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/finetune.py \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
     --train_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
+    --valid_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
     >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
 else
@@ -57,7 +57,7 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python CodeLlama/finetuning.py \
     --num_epochs 5 \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
     --alpaca_dataset.train_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --alpaca_dataset.valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
+    --alpaca_dataset.valid_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
     >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
 fi

@@ -6,7 +6,7 @@ BATCH_SIZE=$4
 CUDA=${5:-"0"}
 
 # Check if the first three parameters are provided
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
     echo "Usage: $0 <DATASET_NAME> <MODEL_NAME> <LENGTH> <BATCH_SIZE> [CUDA]"
     exit 1
 fi

@@ -18,7 +18,7 @@ def split_jsons(input_dir, output_dir):
         with open(json_path, "r") as f:
             data = json.load(f)
 
-        datasets = {'train': data}
+        datasets = train_test_split(data)
         save_dataset_dict(datasets, output_dir, prefix=file.split(".")[0])
 
 
@@ -43,7 +43,6 @@ def jsons_to_alpaca(input_dir, output_dir, dataset_name, pos_ratios=[0.25, 0.5])
 
 def main_diversevul():
     pos_ratios = [0.1, 0.2, 0.3, 0.4, 0.5]
-    len_ratios = [0.2812, 0.2592, 0.254, 0.1304, 0.0752]
 
     data = load_diversevul('data/diversevul/diversevul_20230702.jsonl')
     with open('data/diversevul/split/diversevul_0-512_test.json', "r") as f:
@@ -54,14 +53,13 @@ def main_diversevul():
     pos_ratio_datasets = {}
     for pr in pos_ratios:
         sampled_data = sampling_by_pos_ratio(data, pr)
-        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [64, 128, 256, 384, 512]).values())
+        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [512]).values())
         del datasets[-1]
-        datasets = [truncate(dataset, round(20000 * len_ratios[i])) for i, dataset in enumerate(datasets)]
 
         new_data = []
         for i in range(len(datasets)):
             new_data += datasets[i]
-        truncate(new_data, 20000)
+        truncate(new_data, 25000)
         pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
 
     save_dataset_dict(pos_ratio_datasets, 'data/diversevul_subsampled/', prefix='diversevul')
@@ -73,7 +71,6 @@ def main_diversevul():
 
 def main_draper():
     pos_ratios = [0.1, 0.2, 0.3, 0.4, 0.5]
-    len_ratios = [0.11, 0.29, 0.3396, 0.1624, 0.098]
 
     dataset_dict = load_draper('data/draper')
     data = []
@@ -88,14 +85,13 @@ def main_draper():
     pos_ratio_datasets = {}
     for pr in pos_ratios:
         sampled_data = sampling_by_pos_ratio(data, pr)
-        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [64, 128, 256, 384, 512]).values())
+        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [512]).values())
         del datasets[-1]
-        datasets = [truncate(dataset, round(20000 * len_ratios[i])) for i, dataset in enumerate(datasets)]
 
         new_data = []
         for i in range(len(datasets)):
             new_data += datasets[i]
-        truncate(new_data, 20000)
+        truncate(new_data, 25000)
         pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
 
     save_dataset_dict(pos_ratio_datasets, 'data/draper_subsampled/', prefix='draper')
