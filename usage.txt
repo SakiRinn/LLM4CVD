@@ -62,16 +62,16 @@
 ./finetune_subsampled.sh     diversevul  llama3.1    0·5     2;
 ./inference_subsampled.sh    diversevul  llama3.1    0·5     2;
 
-./finetune_subsampled.sh     draper  llama3.1    0·1     0;
-./inference_subsampled.sh    draper  llama3.1    0·1     0;
-./finetune_subsampled.sh     draper  llama3.1    0·2     1;
-./inference_subsampled.sh    draper  llama3.1    0·2     1;
-./finetune_subsampled.sh     draper  llama3.1    0·3     0;
-./inference_subsampled.sh    draper  llama3.1    0·3     0;
-./finetune_subsampled.sh     draper  llama3.1    0·4     1;
-./inference_subsampled.sh    draper  llama3.1    0·4     1;
-./finetune_subsampled.sh     draper  llama3.1    0·5     2;
-./inference_subsampled.sh    draper  llama3.1    0·5     2;
+./finetune_subsampled.sh     diversevul  llama3.1    0·1     0;
+./inference_subsampled.sh    diversevul  llama3.1    0·1     0;
+./finetune_subsampled.sh     diversevul  llama3.1    0·2     1;
+./inference_subsampled.sh    diversevul  llama3.1    0·2     1;
+./finetune_subsampled.sh     diversevul  llama3.1    0·3     0;
+./inference_subsampled.sh    diversevul  llama3.1    0·3     0;
+./finetune_subsampled.sh     diversevul  llama3.1    0·4     1;
+./inference_subsampled.sh    diversevul  llama3.1    0·4     1;
+./finetune_subsampled.sh     diversevul  llama3.1    0·5     2;
+./inference_subsampled.sh    diversevul  llama3.1    0·5     2;
 
 ./train_baseline.sh   devign  CodeBERT        0-512     0;
 ./train_baseline.sh   devign  UniXcoder       0-512     0;

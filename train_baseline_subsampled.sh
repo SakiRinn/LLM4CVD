@@ -29,8 +29,8 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
-    --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_test.json" \
+    --eval_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
+    --test_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
     --epoch 5 \
     --block_size 512 \
     --train_batch_size 32 \
@@ -47,8 +47,8 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
-    --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_test.json" \
+    --eval_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
+    --test_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
     --num_train_epochs 5 \
     --block_size 512 \
     --train_batch_size 32 \
@@ -66,8 +66,8 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/code/run.py \
     --do_eval \
     --do_test \
     --train_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
-    --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_validate.json" \
-    --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_0-512_test.json" \
+    --eval_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
+    --test_data_file="data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
     --epoch 5 \
     --block_size 512 \
     --train_batch_size 32 \
