@@ -53,14 +53,8 @@ def main_diversevul():
     pos_ratio_datasets = {}
     for pr in pos_ratios:
         sampled_data = sampling_by_pos_ratio(data, pr)
-        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [512]).values())
-        del datasets[-1]
-
-        new_data = []
-        for i in range(len(datasets)):
-            new_data += datasets[i]
-        truncate(new_data, 25000)
-        pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
+        new_data = split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B')['0-512']
+        pos_ratio_datasets[str(pr).replace('.', '·')] = truncate(new_data, 25000)
 
     save_dataset_dict(pos_ratio_datasets, 'data/diversevul_subsampled/', prefix='diversevul')
 
@@ -85,14 +79,8 @@ def main_draper():
     pos_ratio_datasets = {}
     for pr in pos_ratios:
         sampled_data = sampling_by_pos_ratio(data, pr)
-        datasets = list(split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B', [512]).values())
-        del datasets[-1]
-
-        new_data = []
-        for i in range(len(datasets)):
-            new_data += datasets[i]
-        truncate(new_data, 25000)
-        pos_ratio_datasets[str(pr).replace('.', '·')] = new_data
+        new_data = split_by_length(sampled_data, 'meta-llama/Meta-Llama-3-8B')['0-512']
+        pos_ratio_datasets[str(pr).replace('.', '·')] = truncate(new_data, 25000)
 
     save_dataset_dict(pos_ratio_datasets, 'data/draper_subsampled/', prefix='draper')
 
