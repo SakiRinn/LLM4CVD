@@ -212,6 +212,7 @@ def train(args, train_dataset, model, tokenizer):
     tr_loss, logging_loss,avg_loss,tr_nb,tr_num,train_loss = 0.0, 0.0,0.0,0,0,0
     best_mrr=0.0
     best_acc=0.0
+    results = {}
     # model.resize_token_embeddings(len(tokenizer))
     model.zero_grad()
 
@@ -270,7 +271,7 @@ def train(args, train_dataset, model, tokenizer):
                             logger.info("  %s = %s", key, round(value,4))
                         # Save model checkpoint
 
-                    if results['eval_f1']>=best_acc:
+                    if results and results['eval_f1']>=best_acc:
                         best_acc=results['eval_f1']
                         logger.info("  "+"*"*20)
                         logger.info("  Best f1:%s",round(best_acc,4))
@@ -590,7 +591,6 @@ def main():
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
     if args.block_size <= 0:
         args.block_size = tokenizer.max_len_single_sentence  # Our input block size will be the max possible for the model
-    args.block_size = min(args.block_size, tokenizer.max_len_single_sentence)
     if args.model_name_or_path:
         model = model_class.from_pretrained(args.model_name_or_path,
                                             from_tf=bool('.ckpt' in args.model_name_or_path),

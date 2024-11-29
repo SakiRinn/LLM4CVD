@@ -73,7 +73,7 @@
 ./finetune_subsampled.sh     diversevul  llama3.1    0·5     2;
 ./inference_subsampled.sh    diversevul  llama3.1    0·5     2;
 
-./train_baseline.sh   devign  CodeBERT        0-512     0;
+./train_baseline.sh   devign  CodeBERT        512-1024     0;
 ./train_baseline.sh   devign  UniXcoder       0-512     0;
 ./train_baseline.sh   devign  ReGVD           0-512     0;
 ./train_baseline.sh   devign  GraphCodeBERT   0-512     0;
@@ -84,6 +84,14 @@
 
 ./train_baseline_subsampled.sh   diversevul  CodeBERT  0·1  0;
 ./test_baseline_subsampled.sh    diversevul  CodeBERT  0·1  0;
+./train_baseline_subsampled.sh   diversevul  CodeBERT  0·2  0;
+./test_baseline_subsampled.sh    diversevul  CodeBERT  0·2  0;
+./train_baseline_subsampled.sh   diversevul  CodeBERT  0·3  0;
+./test_baseline_subsampled.sh    diversevul  CodeBERT  0·3  0;
+./train_baseline_subsampled.sh   diversevul  CodeBERT  0·4  0;
+./test_baseline_subsampled.sh    diversevul  CodeBERT  0·4  0;
+./train_baseline_subsampled.sh   diversevul  CodeBERT  0·5  0;
+./test_baseline_subsampled.sh    diversevul  CodeBERT  0·5  0;
 
 ./train_baseline.sh   devign        Devign      0-512       0;
 ./train_baseline.sh   devign        Devign      512-1024    0;
@@ -96,11 +104,22 @@
 ./train_baseline.sh   draper        Devign      0-512       0;
 ./train_baseline.sh   draper        Devign      512-1024    0;
 
-./test_baseline.sh   devign        CodeBERT      0-512       0;
-./test_baseline.sh   reveal        CodeBERT      0-512       0;
-./test_baseline.sh   bigvul        CodeBERT      0-512       0;
-./test_baseline.sh   diversevul    CodeBERT      0-512       0;
-./test_baseline.sh   draper        CodeBERT      0-512       0;
+./train_baseline.sh   mix        CodeBERT      0-128          0;
+./test_baseline.sh    mix        CodeBERT      0-128          0;
+./train_baseline.sh   mix        CodeBERT      896-1024       0;
+./test_baseline.sh    mix        CodeBERT      896-1024       0;
+./train_baseline.sh   mix        CodeBERT      128-256        0;
+./test_baseline.sh    mix        CodeBERT      128-256        0;
+./train_baseline.sh   mix        CodeBERT      768-896        0;
+./test_baseline.sh    mix        CodeBERT      768-896        0;
+./train_baseline.sh   mix        CodeBERT      256-384        1;
+./test_baseline.sh    mix        CodeBERT      256-384        1;
+./train_baseline.sh   mix        CodeBERT      384-512        1;
+./test_baseline.sh    mix        CodeBERT      384-512        1;
+./train_baseline.sh   mix        CodeBERT      512-640        1;
+./test_baseline.sh    mix        CodeBERT      512-640        1;
+./train_baseline.sh   mix        CodeBERT      640-768        1;
+./test_baseline.sh    mix        CodeBERT      640-768        1;
 
 ./to_graph.sh   devign  0-512;
 ./to_graph.sh   devign  512-1024;
@@ -156,20 +175,53 @@ CUDA_VISIBLE_DEVICES=2 python CodeLlama/inference.py
     --data_file data/bigvul/alpaca/bigvul_0-512_test.json
     --csv_path llama2_lora_bigvul_0-512.csv 2>&1 1>llama2_lora_bigvul_0-512.log
 
-CUDA_VISIBLE_DEVICES=0 python UniXcoder/code/run.py
-    --output_dir="outputs/UniXcoder/devign_0-512/"
+CUDA_VISIBLE_DEVICES=0 python ReGVD/code/run.py
+    --output_dir="outputs/1/"
     --model_name_or_path=microsoft/codebert-base
     --do_train
     --do_eval
     --do_test
-    --train_data_file="data/devign/alpaca/devign_0-512_train.json"
-    --eval_data_file="data/devign/alpaca/devign_0-512_validate.json"
-    --test_data_file="data/devign/alpaca/devign_0-512_test.json"
+    --train_data_file="data/devign/alpaca/devign_512-1024_train.json"
+    --eval_data_file="data/devign/alpaca/devign_512-1024_validate.json"
+    --test_data_file="data/devign/alpaca/devign_512-1024_test.json"
     --num_train_epochs 5
-    --block_size 512
+    --block_size 1024
     --train_batch_size 32
     --eval_batch_size 64
     --learning_rate 2e-5
     --max_grad_norm 1.0
     --seed 42
-    2>&1 1>"train_UniXcoder_devign_0-512.log"
+
+CUDA_VISIBLE_DEVICES=0 python GraphCodeBERT/code/run.py
+    --output_dir="outputs/1/"
+    --model_name_or_path=microsoft/codebert-base
+    --do_train
+    --do_eval
+    --do_test
+    --train_data_file="data/devign/alpaca/devign_512-1024_train.json"
+    --eval_data_file="data/devign/alpaca/devign_512-1024_validate.json"
+    --test_data_file="data/devign/alpaca/devign_512-1024_test.json"
+    --epoch 5
+    --block_size 1024
+    --train_batch_size 16
+    --eval_batch_size 32
+    --evaluate_during_training
+    --seed 42
+
+    --output_dir="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/" \
+    --csv_path="outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/results.csv" \
+    --tokenizer_name=microsoft/codebert-base \
+    --model_name_or_path=microsoft/codebert-base \
+    --do_train \
+    --do_eval \
+    --do_test \
+    --train_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_train.json" \
+    --eval_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
+    --test_data_file="data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_test.json" \
+    --epoch 5 \
+    --block_size $(echo $LENGTH | awk -F'-' '{print $2}') \
+    --train_batch_size 32 \
+    --eval_batch_size 64 \
+    --evaluate_during_training \
+    --seed 42 \
+    2>"outputs/${MODEL_NAME}/${DATASET_NAME}_${LENGTH}/train_${MODEL_NAME}_${DATASET_NAME}_${LENGTH}.log"

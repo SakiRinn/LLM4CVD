@@ -8,3 +8,4 @@ raw_code/
 tmp/
 @scripts/joern/*
 !@scripts/joern/.gitkeep
+plots/
