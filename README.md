@@ -1,4 +1,4 @@
-# VulLLM
+# LLM4CVD: An Experimental Study
 
 This is the codebase for the paper "Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study".
 
@@ -27,7 +27,7 @@ Collaboration and pull requests are always welcome! If you have any questions or
 ```bibtex
 @article{jiang2024investigating,
   title={Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study},
-  author={Jiang, Xuefeng and Wu, Lvhua and Sun, Sheng and Li, Jia and Xue, Jingjing and Wang, Yuwei and Wu, Tingting and Min, Liu},
+  author={Jiang, Xuefeng and Wu, Lvhua and Sun, Sheng and Li, Jia and Xue, Jingjing and Wang, Yuwei and Wu, Tingting and Liu, Min},
   journal={arXiv preprint},
   year={2024}
 }
