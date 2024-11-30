@@ -1,104 +1,49 @@
 # VulLLM
 
-This is the codebase for the paper "Generalization-Enhanced Code Vulnerability Detection via Multi-Task Instruction Fine-Tuning".
+This is the codebase for the paper "Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study".
 
 **Reproduction of Baseline Models**
+We provide training codes of three graph-based models, two medium-size BERT-based sequence models, and four Llama LLMs to study their performance for the code vulnerability detection task.  
 
-For the reproduction of the baselines, we refer to their official implementation or [CodeXGLUE](https://github.com/microsoft/CodeXGLUE). Here we take [CodeBERT](https://github.com/microsoft/CodeXGLUE/tree/main/Code-Code/Defect-detection) as an example and give its fine-tuning and inference scripts.
+## Requirements
+TBD
 
-***Fine-tuning***
-```
-cd CodeBERT\code
-python run.py \
-    --output_dir=./saved_models \
-    --model_type=roberta \
-    --tokenizer_name=microsoft/codebert-base \
-    --model_name_or_path=microsoft/codebert-base \
-    --do_train \
-    --train_data_file=../../dataset/MixVul/llm/train_512.json \
-    --eval_data_file=../../dataset/MixVul/llm/valid_512.json \
-    --test_data_file=../../dataset/MixVul/llm/test_512.json \
-    --epoch 5 \
-    --block_size 512 \
-    --train_batch_size 32 \
-    --eval_batch_size 64 \
-    --learning_rate 2e-5 \
-    --max_grad_norm 1.0 \
-    --evaluate_during_training \
-    --seed 123456  2>&1 | tee train.log
-```
+## Dataset
+TBD
 
-***Inference***
+## How to Run and Evaluate
+TBD
 
-```
-cd CodeBERT\code
-python run.py \
-    --output_dir=./saved_models \
-    --model_type=roberta \
-    --tokenizer_name=microsoft/codebert-base \
-    --model_name_or_path=microsoft/codebert-base \
-    --do_eval \
-    --do_test \
-    --train_data_file=../../dataset/MixVul/llm/train_512.json \
-    --eval_data_file=../../dataset/MixVul/llm/valid_512.json \
-    --test_data_file=../../dataset/MixVul/llm/test_512.json \
-    --epoch 5 \
-    --block_size 512 \
-    --train_batch_size 32 \
-    --eval_batch_size 64 \
-    --learning_rate 2e-5 \
-    --max_grad_norm 1.0 \
-    --evaluate_during_training \
-    --seed 123456  2>&1 | tee train.log
-```
-
-**Running VulLLM**
-
-For CodeLlama, we refer to its official implementation [llama-recipes](https://github.com/facebookresearch/llama-recipes). The location of the training data is located at `/CodeLlama/configs/datasets.py`. We use the alpaca format data set, which is located in `class alpaca_dataset`.
-
-***Fine-tuning CodeLlama and Llama-2***
-```
-cd CodeLlama
-python finetuning.py \
-    --use_peft \
-    --model_name codellama/CodeLlama-13b-hf \
-    --peft_method lora \
-    --batch_size_training 32 \
-    --val_batch_size 32 \
-    --context_length 512 \
-    --quantization \
-    --num_epochs 3 \
-    --output_dir codellama-13b-multi-r16
-```
-
-***Inference***
-```
-cd CodeLlama
-python inference-basic.py \
-    --model_type codellama \
-    --base_model codellama/CodeLlama-13b-hf \
-    --tuned_model odellama-13b-multi-r16 \
-    --data_file ../dataset/ReVeal/test_512.json
-```
-
-**Adversarial Attacks**
-
-For adversarial attacks, you can run the script `attack_{models}_{attacks}.py` located in the Attack directory, where models can be either `llm` or `ptm`, representing attacks on large language models and pre-trained models, respectively. attacks can be chosen from `mhm`, `wir`, and `deadcode`, which represent two types of attacks based on random identifier replacements and one type of attack based on dead code insertion, respectively. A script example is as follows.
-```
-cd Attack
-python attack_ptm_wir.py \
-    --model_type=roberta \
-    --output_dir=../CodeBERT/saved_models/ \
-    --tokenizer_name=microsoft/codebert-base \
-    --model_name_or_path=microsoft/codebert-base \
-    --csv_store_path attack_results_ptm/attack_WIR_CodeBERT_ReVeal.csv \
-    --eval_data_file=../dataset/ReVeal/test_512.json \
-    --block_size 512 \
-    --eval_batch_size 64 \
-    --seed 12345 2>&1 | tee attack_results_ptm/attack_wir_CodeBERT_ReVeal.log
-```
-The tuned model weights, performance evaluation results, and adversarial attack results are available in [Renodo](https://zenodo.org/records/10677069).
+## Helpful Resources
+TBD
 
 ## Acknowledgement
 
-We are very grateful that the authors of CodeLlama, Llama-2, StarCoder make their code publicly available so that we can build our VulLLM on top of their code.
+We are very grateful that the authors of VulLLM, CodeLlama, and Meta AI which make their codes or models publicly available so that we can carry out this experimental study on top of their hard works.
+
+## Citing this work
+Collaboration and pull requests are always welcome! If you have any questions or suggestions, please feel free to contact me : )
+
+```bibtex
+@article{jiang2024investigating,
+  title={Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study},
+  author={Jiang, Xuefeng and Wu, Lvhua and Sun, Sheng and Li, Jia and Xue, Jingjing and Wang, Yuwei and Wu, Tingting and Min, Liu},
+  journal={arXiv preprint},
+  year={2024}
+}
+
+
+@article{feng2020codebert,
+  title={Codebert: A pre-trained model for programming and natural languages},
+  author={Feng, Zhangyin and Guo, Daya and Tang, Duyu and Duan, Nan and Feng, Xiaocheng and Gong, Ming and Shou, Linjun and Qin, Bing and Liu, Ting and Jiang, Daxin and others},
+  journal={arXiv preprint arXiv:2002.08155},
+  year={2020}
+}
+
+@article{du2024generalization,
+  title={Generalization-Enhanced Code Vulnerability Detection via Multi-Task Instruction Fine-Tuning},
+  author={Du, Xiaohu and Wen, Ming and Zhu, Jiahao and Xie, Zifan and Ji, Bin and Liu, Huijun and Shi, Xuanhua and Jin, Hai},
+  journal={arXiv preprint arXiv:2406.03718},
+  year={2024}
+}
+```
