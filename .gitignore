@@ -1,0 +1,11 @@
+**/__pycache__
+**/graph/intermediate
+joern/*
+joern/.gitkeep
+*.log
+.vscode/
+data/
+outputs/
+raw_code/
+tmp/
+plots/
