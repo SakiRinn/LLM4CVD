@@ -13,6 +13,6 @@ if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     exit 1
 fi
 
-python @scripts/to_graph/main.py \
+python data_process/to_graph/main.py \
     "data/${DATASET_NAME}/length/${DATASET_NAME}_${LENGTH}.json" \
     --output-dir "data/${DATASET_NAME}/graph/"

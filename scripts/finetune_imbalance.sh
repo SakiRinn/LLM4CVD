@@ -27,7 +27,7 @@ BATCH_MAP["codellama"]=16
 BATCH_MAP["llama3"]=16
 BATCH_MAP["llama3.1"]=16
 
-mkdir -p "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/"
+mkdir -p "outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/"
 
 echo "Batch size: ${BATCH_MAP[$MODEL_NAME]}"
 echo "Pos ratio: $(echo $POS_RATIO)"
@@ -43,6 +43,5 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python LLM/finetuning.py \
     --model_name ${MODEL_MAP[$MODEL_NAME]} \
     --alpaca_dataset.train_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_train.json" \
     --alpaca_dataset.valid_data_path "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_validate.json" \
-    --output_dir "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
-    >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
-fi
+    --output_dir "outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/" \
+    >"outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"

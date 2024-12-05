@@ -15,14 +15,14 @@ if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     exit 1
 fi
 
-mkdir -p "outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/"
+mkdir -p "outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/"
 
 echo "POS_RATIO: $(echo $POS_RATIO)"
 
 if [[ "$MODEL_NAME" == "GraphCodeBERT" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
-    --output_dir="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
-    --csv_path="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
+    --output_dir="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/" \
+    --csv_path="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/results.csv" \
     --tokenizer_name=microsoft/codebert-base \
     --model_name_or_path=microsoft/codebert-base \
     --do_train \
@@ -37,11 +37,11 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
     --eval_batch_size 64 \
     --evaluate_during_training \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
+    2>"outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
 elif [[ "$MODEL_NAME" == "UniXcoder" ]]; then
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
-    --output_dir="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
-    --csv_path="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
+    --output_dir="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/" \
+    --csv_path="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/results.csv" \
     --model_name_or_path=microsoft/codebert-base \
     --do_train \
     --do_eval \
@@ -54,11 +54,11 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
     --train_batch_size 32 \
     --eval_batch_size 64 \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
+    2>"outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
 else
 CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
-    --output_dir="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/" \
-    --csv_path="outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
+    --output_dir="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/" \
+    --csv_path="outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/results.csv" \
     --model_type=roberta \
     --tokenizer_name=microsoft/codebert-base \
     --model_name_or_path=microsoft/codebert-base \
@@ -74,5 +74,5 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python ${MODEL_NAME}/run.py \
     --eval_batch_size 64 \
     --evaluate_during_training \
     --seed 42 \
-    2>"outputs/${MODEL_NAME}_subsampled/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
+    2>"outputs/${MODEL_NAME}_imbalance/${DATASET_NAME}_${POS_RATIO}/train_${MODEL_NAME}_${DATASET_NAME}_${POS_RATIO}.log"
 fi

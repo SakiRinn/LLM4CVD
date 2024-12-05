@@ -21,13 +21,13 @@ MODEL_MAP["llama3.1"]='meta-llama/Llama-3.1-8B'
 MODEL_MAP["llama2"]="meta-llama/Llama-2-7b-hf"
 MODEL_MAP["codellama"]="codellama/CodeLlama-7b-hf"
 
-mkdir -p "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/"
+mkdir -p "outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/"
 
 echo "POS_RATIO: $(echo $POS_RATIO)"
 
 CUDA_VISIBLE_DEVICES="${CUDA}" python LLM/inference.py \
     --base_model ${MODEL_MAP[$MODEL_NAME]} \
-    --tuned_model "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/epoch-4" \
+    --tuned_model "outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/epoch-4" \
     --data_file "data/${DATASET_NAME}_subsampled/alpaca/${DATASET_NAME}_${POS_RATIO}_test.json" \
-    --csv_path "outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/results.csv" \
-    >"outputs/${MODEL_NAME}_lora_subsampled/${DATASET_NAME}_${POS_RATIO}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"
+    --csv_path "outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/results.csv" \
+    >"outputs/${MODEL_NAME}_lora_imbalance/${DATASET_NAME}_${POS_RATIO}/inference_${MODEL_NAME}_lora_${DATASET_NAME}_${POS_RATIO}.log"

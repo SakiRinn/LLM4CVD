@@ -40,4 +40,3 @@ CUDA_VISIBLE_DEVICES="${CUDA}" python LLM/finetuning.py \
     --alpaca_dataset.valid_data_path "data/${DATASET_NAME}/alpaca/${DATASET_NAME}_${LENGTH}_validate.json" \
     --output_dir "outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/" \
     >"outputs/${MODEL_NAME}_lora/${DATASET_NAME}_${LENGTH}/finetuning_${MODEL_NAME}_lora_${DATASET_NAME}_${LENGTH}.log"
-fi

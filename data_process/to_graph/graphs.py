@@ -16,7 +16,7 @@ from tokenizer import code_tokenize
 
 
 # Require joern v0.2.5
-PROJECT_DIR = osp.realpath(osp.join(osp.dirname(__file__), '..'))
+PROJECT_DIR = osp.realpath(osp.join(osp.dirname(__file__), '..', '..'))
 JOERN_DIR = osp.join(PROJECT_DIR, 'joern')
 
 NODE_TYPES = [
