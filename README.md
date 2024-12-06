@@ -23,10 +23,10 @@ To facilitate related communities and encourage future studies, we provide an ea
 ## Dataset
 
 We provide our converted datasets in our HuggingFace dataset repository.
-You can download the datasets by the following command:
+At the current path, you can download the datasets by the following command, and remember to rename `VulResource` to `data`:
 
 ```shell
-huggingface-cli download -d xuefen/VulResource
+git clone https://huggingface.co/datasets/xuefen/VulResource
 ```
 
 **Original paper and resources are listed below.**
