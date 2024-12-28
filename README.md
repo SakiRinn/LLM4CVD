@@ -141,10 +141,10 @@ We implement our studied models by referencing the following resources or codeba
 | CodeBERT Family | Referenced Codebase for Implementation | [Link](https://github.com/microsoft/CodeBERT) |
 | ReGVD | Referenced Codebase for Implementation | [Link](https://github.com/daiquocnguyen/GNN-ReGVD) |
 | Llama Family | Meta AI Open-source LLMs | [Link](https://proceedings.neurips.cc/paper_files/paper/2019/hash/49265d2447bc3bbfe9e76306ce40a31f-Abstract.html) |
-| Evaluate ChatGPT for CVD | Recommened Codebase | [Link](https://github.com/soarsmu/ChatGPT-VulDetection) |
-| Awesome Code LLM | Recommened Paper List | [Link](https://github.com/PurCL/CodeLLMPaper) |
-| Awesome LLM for Software Engineering | Recommened Paper List | [Link](https://github.com/gai4se/LLM4SE) |
-| Awesome LLM for Security | Recommened Paper List | [Link](https://github.com/liu673/Awesome-LLM4Security) |
+| Evaluate ChatGPT for CVD | Recommended Codebase | [Link](https://github.com/soarsmu/ChatGPT-VulDetection) |
+| Awesome Code LLM | Recommended Paper List | [Link](https://github.com/PurCL/CodeLLMPaper) |
+| Awesome LLM for Software Engineering | Recommended Paper List | [Link](https://github.com/gai4se/LLM4SE) |
+| Awesome LLM for Security | Recommended Paper List | [Link](https://github.com/liu673/Awesome-LLM4Security) |
 
 
 ## Acknowledgement
