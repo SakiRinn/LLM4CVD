@@ -120,7 +120,7 @@ Other parameters can refer to the usage within every script.
 
 Unlike other models, the Devign model requires data to be converted into graph format before training and evaluation. To simplify this process, we provide the `to_graph.sh` script.
 
-Before converting, you need to download `joern.zip` from [this link](https://), extract it, and store all the files in the `joern/` directory. Make sure the current user has execute (`x`) permissions for `joern-parse`.
+Before converting, you need to download `joern.zip` from [this link](https://drive.google.com/file/d/1Jh5-JJ8BKGL53uAxWjSnEBjw0oRDm_Ss/view?usp=sharing), extract it, and store all the files in the `joern/` directory. Make sure the current user has execute (`x`) permissions for `joern-parse`.
 
 An example of training and evaluating the Devign model is as follows:
 
