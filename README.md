@@ -1,6 +1,6 @@
 # LLM4CVD: An Experimental Study
 
-This is the codebase for the paper "Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study", which is submitted to SCIENCE CHINA Information Sciences (SCIS). The arxiv version of this work will be publicly available soon.
+This is the codebase for the paper "Investigating Large Language Models for Code Vulnerability Detection: An Experimental Study", which is submitted to IEEE TIFS. The arxiv version of this work is publicly available soon via [this link](https://arxiv.org/abs/2412.18260).
 
 To facilitate related communities and encourage future studies, we provide an easy-to-use and unified codebase to implement three graph-based models, two medium-size BERT-based sequence models, and four LLMs to study their performance for the code vulnerability detection task. Our codebase is built on the top of some related codebases provided below (Awesome Helpful Resources).
 
