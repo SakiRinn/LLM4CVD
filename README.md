@@ -136,11 +136,11 @@ We implement our studied models by referencing the following resources or codeba
 
 | Resource Name | Summary | Link |
 | --- | --- | --- |
-| VulLLM | Referenced Codebase for Implementation | [Link](https://ieeexplore.ieee.org/abstract/document/9448435/?casa_token=S7Edzt0cuYkAAAAA:XId-rO6uAISCMYMyq4bvmcD83vqSfPCnZDqycv8iHI-tRZ9OVm-gAZzwIVZZGustUX1IsQ7Oew) |
+| VulLLM | Referenced Codebase for Implementation | [Link](https://github.com/CGCL-codes/VulLLM) |
 | Devign | Referenced Codebase for Implementation | [Link](https://github.com/saikat107/Devign) |
 | CodeBERT Family | Referenced Codebase for Implementation | [Link](https://github.com/microsoft/CodeBERT) |
 | ReGVD | Referenced Codebase for Implementation | [Link](https://github.com/daiquocnguyen/GNN-ReGVD) |
-| Llama Family | Meta AI Open-source LLMs | [Link](https://proceedings.neurips.cc/paper_files/paper/2019/hash/49265d2447bc3bbfe9e76306ce40a31f-Abstract.html) |
+| Llama Family | Meta AI Open-source LLMs | [Link](https://arxiv.org/abs/2307.09288) |
 | Evaluate ChatGPT for CVD | Recommended Codebase | [Link](https://github.com/soarsmu/ChatGPT-VulDetection) |
 | Awesome Code LLM | Recommended Paper List | [Link](https://github.com/PurCL/CodeLLMPaper) |
 | Awesome LLM for Software Engineering | Recommended Paper List | [Link](https://github.com/gai4se/LLM4SE) |
