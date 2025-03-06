@@ -145,6 +145,7 @@ We implement our studied models by referencing the following resources or codeba
 | Awesome Code LLM | Recommended Paper List | [Link](https://github.com/PurCL/CodeLLMPaper) |
 | Awesome LLM for Software Engineering | Recommended Paper List | [Link](https://github.com/gai4se/LLM4SE) |
 | Awesome LLM for Security | Recommended Paper List | [Link](https://github.com/liu673/Awesome-LLM4Security) |
+| Awesome Code Vulnerability Analysis| Recommended Paper List | [Link](https://github.com/huhusmang/Awesome-LLMs-for-Vulnerability-Detection) |
 
 
 ## Acknowledgement
